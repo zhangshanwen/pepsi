@@ -1,0 +1,93 @@
+import {reactive, ref, onMounted} from "vue";
+import {useI18n} from "vue-i18n";
+import formatterApi from "./formatter";
+
+const tableApi = (
+    fetchPageApi: {
+        (pagination: any): Promise<any>
+    },
+    createApi: { (form: any): Promise<any> },
+    editApi: { (form: any): Promise<any> },
+    deleteApi: { (form: any): Promise<any> },
+    visible: {
+        save: boolean,
+        delete: boolean,
+    },
+    form: {}
+    ) => {
+        const t = useI18n().t
+
+        const pagination = reactive({
+            total: 0,
+            page_index: 1,
+            page_size: 20,
+            page_size_array: [10, 20, 50, 100, 300, 1000],
+            layout: 'total, sizes, prev, pager, next, jumper',
+            sort: false,
+            order: 'id',
+            loading: false
+        })
+        const table_data = ref([]);
+
+
+        const loadData = async () => {
+            pagination.loading = true;
+            fetchPageApi(pagination).then((res: any) => {
+                table_data.value = res.data.list;
+                pagination.total = res.data.pagination.total
+            }).catch(() => {
+            }).finally(() => {
+                pagination.loading = false;
+            });
+        }
+        const newData = async () => {
+            createApi(form).then((res: any) => {
+                visible.save = false;
+                loadData();
+            }).catch();
+        }
+        const editData = async () => {
+            editApi(form).then((res: any) => {
+                    visible.save = false;
+                    loadData();
+                }
+            ).catch();
+        }
+        const deleteOne = async () => {
+            deleteApi(form).then((res: any) => {
+                    visible.delete = false;
+                    loadData();
+                }
+            ).catch();
+        }
+        const handleSizeChange = async (page_size: number) => {
+            pagination.page_size = page_size;
+            await loadData();
+        }
+        // 上下分页
+        const handleCurrentChange = async (page: number) => {
+            pagination.page_index = page;
+            await loadData();
+        }
+        onMounted(async () => {
+            await loadData()
+        })
+        return {
+            ...formatterApi(),
+
+            t,
+            table_data,
+            pagination,
+
+            loadData,
+            newData,
+            editData,
+            deleteOne,
+
+            handleSizeChange,
+            handleCurrentChange,
+        }
+    }
+;
+
+export default tableApi;

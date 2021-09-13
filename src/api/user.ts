@@ -1,0 +1,33 @@
+import request from '../utils/request'
+
+export function getUsers(pagination: { page_index: number; page_size: number; sort: boolean; order: string }) {
+    return request.get(`/v1/users`, {
+        params: {
+            page: pagination.page_index,
+            page_size: pagination.page_size,
+            sort: pagination.sort,
+            order: pagination.order,
+        },
+    })
+}
+
+export function createUser(form: { username: string; password: string }) {
+    return request.post(`/v1/users`, {
+        username: form.username,
+        password: form.password,
+    })
+}
+
+export function editUser(form: { id: number; username: string }) {
+    return request.put(`/v1/users/${form.id}`, {
+        username: form.username,
+    })
+}
+
+export function deleteUser(form: { id: number }) {
+    return request.delete(`/v1/user/${form.id}`)
+}
+
+export function resetUserPassword(form: { id: number }) {
+    return request.get(`/v1/user/password/reset/${form.id}`)
+}

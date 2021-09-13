@@ -1,0 +1,173 @@
+<template>
+    <div class="login-wrap">
+        <div class="ms-login">
+            <div class="ms-title">{{t('i18n.backend_system')}}</div>
+            <el-form @submit.native.prevent :model="param" :rules="rules" ref="login_ref" label-width="0px"
+                     class="ms-content">
+                <el-form-item prop="username">
+                    <el-input v-model="param.username" :placeholder="t('i18n.pls_input_username_mobile')">
+                        <el-button slot="prepend" icon="el-icon-lx-people"></el-button>
+                    </el-input>
+                </el-form-item>
+                <el-form-item prop="password">
+                    <el-input
+                            type="password"
+                            :placeholder="t('i18n.pls_input_password')"
+                            v-model="param.password">
+                        <el-button slot="prepend" icon="el-icon-lx-lock"></el-button>
+                    </el-input>
+                </el-form-item>
+                <el-form-item class="login-btn">
+                    <el-button type="primary" @keyup.enter.native="submitForm()" @click="submitForm()">
+                        {{t('i18n.login')}}
+                    </el-button>
+                </el-form-item>
+            </el-form>
+        </div>
+    </div>
+</template>
+
+<script lang="ts">
+    import {ref, reactive} from 'vue';
+    import {useStore} from 'vuex'
+    import {useRouter} from 'vue-router';
+    import {useI18n} from 'vue-i18n';
+
+    import {login} from '../api/login';
+    import key2Path from '../api/route';
+    import {setToken} from '../utils/auth';
+    import {savePermissionMenus, setPermissions} from '../utils/permission';
+
+    export default {
+        name: 'Login',
+        setup() {
+            const store = useStore();
+
+            const param = reactive({
+                username: "admin",
+                password: "123456"
+            });
+
+            const login_ref = ref(false);
+            const t = useI18n().t;
+            const router = useRouter()
+            const rules = {
+                username: [
+                    {
+                        required: true,
+                        message: t('i18n.pls_input_username'),
+                        trigger: 'blur'
+                    }
+                ],
+                password: [
+                    {
+                        required: true,
+                        message: t('i18n.pls_input_password'),
+                        trigger: 'blur'
+                    }
+                ]
+            };
+            let keys_permission: any[] = [];
+            let menus: any[] = [];
+
+            const submitForm = () => {
+                if (login_ref.value) {
+                    login(param)
+                        .then((res) => {
+                            localStorage.setItem('ms_username', res.data.username);
+                            setToken(res.data.authorization);
+                            menus = [];
+                            setPath(res.data.list, menus);
+                            savePermissionMenus(menus);
+                            setPermissions(res.data.keys);
+                            store.commit("clearTags");
+                            router.push('/');
+
+                        })
+                        .catch(() => {
+                        });
+                }
+            };
+            const setPath = (children: any[], items: any[]) => {
+                children.forEach((child) => {
+                    keys_permission = keys_permission.concat(child.key);
+                    const path = key2Path[child.key];
+                    let item = {
+                        icon: child.icon,
+                        id: child.id,
+                        index: key2Path[child.key]
+                            ? key2Path[child.key]
+                            : child.id.toString(),
+                        title: child.name,
+                        path: path,
+                        children: []
+                    };
+                    items.push(item);
+                    setPath(child.children, item.children);
+                });
+            };
+            return {
+                t,
+                login_ref,
+                rules,
+                param,
+                keys_permission,
+                menus,
+                submitForm,
+                setPath
+
+            };
+
+        }
+    };
+</script>
+
+<style scoped>
+    .login-wrap {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background-image: url(../assets/img/login-bg.jpg);
+        background-size: 100%;
+    }
+
+    .ms-title {
+        width: 100%;
+        line-height: 50px;
+        text-align: center;
+        font-size: 20px;
+        color: #fff;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .ms-login {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 350px;
+        margin: -190px 0 0 -175px;
+        border-radius: 5px;
+        background: rgba(255, 255, 255, 0.3);
+        overflow: hidden;
+    }
+
+    .ms-content {
+        padding: 30px 30px;
+    }
+
+    .login-btn {
+        text-align: center;
+    }
+
+    .login-btn button {
+        width: 100%;
+        height: 36px;
+        margin-bottom: 10px;
+    }
+
+    .login-tips {
+        font-size: 12px;
+        line-height: 30px;
+        color: #fff;
+    }
+</style>
