@@ -2,7 +2,7 @@
     <div>
         <div class="contain">
             <el-button type="primary" @click="loadData()">{{t('i18n.search')}}</el-button>
-            <el-button type="primary" @click="clickNewData()">{{t('i18n.new')}}</el-button>
+            <el-button type="primary" v-if="permission.add" @click="clickNewData()">{{t('i18n.new')}}</el-button>
             <el-divider></el-divider>
             <el-table
                     v-loading="pagination.loading"
@@ -12,9 +12,11 @@
                     highlight-current-row
                     header-cell-class-name="table-header-class"
                     style="width:100%">
-                <el-table-column :label="t('field.id')"
-                                 property="id"
+                <el-table-column :label="t('field.index')"
                                  align="center">
+                    <template #default="scope">
+                        <p>{{scope.$index+1+ (pagination.page_index-1)*pagination.page_size}}</p>
+                    </template>
                 </el-table-column>
                 <el-table-column :label="t('field.username')"
                                  property="username"
@@ -44,29 +46,32 @@
                                  align="center">
                 </el-table-column>
                 <el-table-column :label="t('i18n.role')"
-                                 align="center">
+                                 align="center" v-if="permission.change_role">
                     <template #default="scope">
-                        <el-button type="text" @click="clickChangeRole(scope.row)">{{t('i18n.change')}}
+                        <el-button type="text" v-if="permission.change_role" @click="clickChangeRole(scope.row)">
+                            {{t('i18n.change')}}
                         </el-button>
                     </template>
                 </el-table-column>
                 <el-table-column :label="t('i18n.permission')"
-                                 align="center">
+                                 align="center" v-if="permission.change_permission">
                     <template #default="scope">
-                        <el-button type="text" @click=clickPermission(scope.row)>{{t('i18n.change')}}
+                        <el-button type="text" v-if="permission.change_permission" @click=clickPermission(scope.row)>
+                            {{t('i18n.change')}}
                         </el-button>
                     </template>
                 </el-table-column>
                 <el-table-column :label="t('i18n.operate')"
-                                 align="center">
+                                 align="center" v-if="permission.rest_password || permission.edit || permission.delete">
                     <template #default="scope">
-                        <el-button type="text" @click="clickResetPassword(scope.row.id)">
+                        <el-button type="text" v-if="permission.rest_password"
+                                   @click="clickResetPassword(scope.row.id)">
                             {{t('i18n.reset_password')}}
                         </el-button>
-                        <el-button type="text" @click=clickEditData(scope.row)>
+                        <el-button type="text" v-if="permission.edit" @click=clickEditData(scope.row)>
                             {{t('i18n.edit')}}
                         </el-button>
-                        <el-button type="text" @click="clickDeleteData(scope.row.id)">
+                        <el-button type="text" v-if="permission.delete" @click="clickDeleteData(scope.row.id)">
                             {{t('i18n.delete')}}
                         </el-button>
                     </template>
@@ -133,14 +138,14 @@
                         :options="role_options"
                         :loading="role_loading"
                 >
-
                 </el-select-v2>
-
             </div>
-            <div slot="footer" class="dialog-footer">
+            <template #footer>
+            <span class="dialog-footer">
                 <el-button type="primary" @click="visible.change_role = false">{{t('i18n.cancel')}}</el-button>
                 <el-button type="primary" @click="saveRole()">{{t('i18n.confirm')}}</el-button>
-            </div>
+            </span>
+            </template>
         </el-dialog>
         <el-drawer
                 :title="t('i18n.change_permission')"
@@ -154,8 +159,8 @@
 </template>
 
 <script lang="ts">
-    import {reactive, ref, provide, computed} from "vue";
-    import {ElMessageBox, ElMessage} from 'element-plus';
+    import {reactive, ref, computed, onMounted, onUnmounted, nextTick} from "vue";
+    import {ElMessageBox} from 'element-plus';
 
     import RolePermission from "../components/RolePermission.vue";
 
@@ -163,12 +168,12 @@
     import {createAdmin, deleteAdmin, editAdmin, getAdmins, changeRole, resetAdminPassword} from "../api/admin";
     import {getRolePermissions} from "../api/rolePermission";
     import {getRoles} from "../api/role";
+    import {has_permission} from "../utils/permission";
 
     export default {
         name: "Admin",
         components: {RolePermission},
         setup() {
-
 
             const visible = reactive({
                 save: false,
@@ -185,6 +190,7 @@
                 role_id: 0,
                 is_edit: false,
             })
+
             const disable = reactive({
                 is_new: computed(() => form.username === '' || form.password === ''),
                 is_edit: computed(() => form.username === ''),
@@ -199,6 +205,25 @@
                 username: [{required: true, message: table_api.t('i18n.pls_input_username'), trigger: 'blur'}],
                 password: [{required: true, message: table_api.t('i18n.pls_input_password'), trigger: 'blur'}]
             }
+            const role_options_pagination = ref({
+                total: 0,
+                page_index: 1,
+                page_size: 20,
+                sort: false,
+                order: 'id'
+            })
+
+            const permission = {
+                add: has_permission("30_1_1631276859399"),
+                edit: has_permission("30_2_1631276890248"),
+                delete: has_permission("30_3_1631276905329"),
+                change_role: has_permission("30_4_1631276938272"),
+                change_permission: has_permission("30_5_1631276967393"),
+                rest_password: has_permission("30_6_1631277265508"),
+            }
+
+
+            /*  method  */
             const clickNewData = () => {
                 form.username = ''
                 form.password = ''
@@ -234,6 +259,8 @@
                 form.role_id = row.role.id
 
                 visible.change_role = true
+                await nextTick(async () => {
+                })
 
             }
             const clickPermission = (row: { id: number; }) => {
@@ -246,13 +273,6 @@
 
             }
 
-            const role_options_pagination = ref({
-                total: 0,
-                page_index: 1,
-                page_size: 20,
-                sort: false,
-                order: 'id'
-            })
 
             const initRoleOption = async () => {
                 role_options_pagination.value = {
@@ -266,6 +286,9 @@
                 await loadRoles();
             }
             const loadRoles = async () => {
+                if (role_options.value.length >= role_options_pagination.value.total && role_options.value.length > 0) {
+                    return
+                }
                 await getRoles(role_options_pagination.value).then(res => {
                     if (res.data.list.length > 0) {
                         role_options_pagination.value.total = res.data.pagination.total;
@@ -274,6 +297,7 @@
                             value: item.id,
                             label: item.name,
                         })));
+
                     }
 
                 }).catch(() => {
@@ -282,7 +306,6 @@
             const resetPassword = () => {
                 resetAdminPassword(form.id).then((res: { data: { password: string; }; }) => {
                         visible.reset_password = false;
-
                         ElMessageBox.confirm(table_api.t('i18n.password_reset_success') + ':' + res.data.password, table_api.t('i18n.prompt'), {
                             type: 'warning',
                             beforeClose: (action, instance, done) => {
@@ -319,12 +342,12 @@
                     visible.change_role = false;
                 });
             }
-
             return {
                 ...table_api,
 
                 form,
                 rules,
+                permission,
                 visible,
                 disable,
                 role_loading,
@@ -338,6 +361,7 @@
                 clickPermission,
                 clickResetPassword,
                 resetPassword,
+                loadRoles,
                 saveRole,
                 roleType,
             }
@@ -345,19 +369,18 @@
     }
 </script>
 
-<style scoped>
+<style scoped lang="sass">
 
-    .contain {
-        background: #fff;
-        padding: 10px;
-        margin-bottom: 20px;
-    }
+    .contain
+        background: #fff
+        padding: 10px
+        margin-bottom: 20px
 
 
-    .role_options {
-        margin-top: 20px;
-        margin-bottom: 20px;
-    }
+        .role_options
+            margin-top: 20px
+            margin-bottom: 20px
+
 
 </style>
 

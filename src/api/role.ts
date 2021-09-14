@@ -3,7 +3,7 @@ import request from '../utils/request'
 export function getRoles(form: { page_index: number; page_size: number; sort: boolean; order: string }) {
   return request.get(`/v1/roles`, {
     params: {
-      page: form.page_index,
+      page_index: form.page_index,
       page_size: form.page_size,
       sort: form.sort,
       order: form.order,

@@ -1,13 +1,9 @@
 <template>
     <div class="contain">
-        <template>
-            <div>
-                <el-button type="success" class="new"
-                           @click="addPermission(null)">{{t('i18n.new')}}
-                </el-button>
-            </div>
-        </template>
-
+        <el-button type="success" class="new"
+                   v-if="permission.add"
+                   @click="addPermission(null)">{{t('i18n.new')}}
+        </el-button>
         <el-card v-for="(group,index) in all_permission" :key="index"
                  shadow="hover">
             <div slot="header">
@@ -15,6 +11,7 @@
                 <div style="float: right;">
                     <el-link
                             :underline="false"
+                            v-if="permission.add"
                             @click="addPermission(group)"
                             type="success"
                             icon="el-icon-plus"
@@ -24,6 +21,7 @@
                             :underline="false"
                             type="text"
                             icon="el-icon-edit"
+                            v-if="permission.edit"
                             @click="editPermission(group)"
                     >{{t('i18n.edit')}}
                     </el-link>&nbsp;&nbsp;
@@ -32,7 +30,9 @@
                             type="text"
                             icon="el-icon-delete"
                             style="color:#F56C6C"
-                            @click="disablePermission(group)"
+                            v-if="permission.delete"
+
+                            @click="deletePermission(group)"
                     >{{t('i18n.delete')}}
                     </el-link>
                 </div>
@@ -44,6 +44,8 @@
                     <div style="float: right;">
                         <el-link
                                 :underline="false"
+                                v-if="permission.add"
+
                                 @click="addPermission(item)"
                                 type="success"
                                 icon="el-icon-plus"
@@ -53,6 +55,8 @@
                                 :underline="false"
                                 type="text"
                                 icon="el-icon-edit"
+                                v-if="permission.edit"
+
                                 @click="editPermission(item)"
                         >{{t('i18n.edit')}}
                         </el-link>&nbsp;&nbsp;
@@ -61,7 +65,9 @@
                                 type="text"
                                 icon="el-icon-delete"
                                 style="color:#F56C6C"
-                                @click="disablePermission(item)"
+                                v-if="permission.add"
+
+                                @click="deletePermission(item)"
                         >{{t('i18n.delete')}}
                         </el-link>
                     </div>
@@ -71,8 +77,9 @@
                             class="sub_permission"
                             v-for="sub_item in item.children"
                             :key="sub_item.id"
-                            @click="editPermission(sub_item)"
-                            @close="disablePermission(sub_item)"
+                            :closable="permission.delete"
+                            @click="permission.edit?editPermission(sub_item):null"
+                            @close="deletePermission(sub_item)"
                     >{{sub_item.name}}
                     </el-tag>
                 </div>
@@ -85,24 +92,24 @@
         </el-card>
 
         <el-dialog
-                :title="permission.id?t('i18n.edit_permission'):t('i18n.add_permission')"
+                :title="form.id?t('i18n.edit_permission'):t('i18n.add_permission')"
                 v-model="visible.setting_permission"
                 :close-on-click-modal="false"
         >
             <el-form
                     ref="post_permission_form"
-                    :model="permission"
+                    :model="form"
                     :rules="post_permission_rules"
                     label-width="120px"
             >
                 <el-form-item :label="t('field.name')" prop="name">
-                    <el-input v-model="permission.name" clearable></el-input>
+                    <el-input v-model="form.name" clearable></el-input>
                 </el-form-item>
                 <el-form-item :label="t('field.key')" prop="key">
-                    <el-input v-model="permission.key" clearable></el-input>
+                    <el-input v-model="form.key" clearable></el-input>
                 </el-form-item>
                 <el-form-item :label="t('field.icon')" prop="icon">
-                    <el-select v-model="permission.icon"
+                    <el-select v-model="form.icon"
                                collapse-tags filterable :placeholder="t('i18n.pls_choose')">
                         <el-option
                                 v-for="item in el_icon_options"
@@ -112,10 +119,10 @@
                         </el-option>
                     </el-select>
                     &nbsp;&nbsp;
-                    <i :class="permission.icon"></i>
+                    <i :class="form.icon"></i>
                 </el-form-item>
                 <el-form-item :label="t('field.route')" prop="route">
-                    <el-select v-model="permission.route_ids" multiple
+                    <el-select v-model="form.route_ids" multiple
                                collapse-tags filterable :placeholder="t('i18n.pls_choose')">
                         <el-option
                                 v-for="item in all_route_options"
@@ -127,7 +134,7 @@
                 </el-form-item>
             </el-form>
             <template #footer class="dialog-footer">
-                <el-button @click="is_show_setting_permission_dialog = false">{{t('i18n.cancel')}}</el-button>
+                <el-button @click="visible.setting_permission = false">{{t('i18n.cancel')}}</el-button>
 
                 <el-button type="primary" @click="saveData" :loading="submit_loading">{{t('i18n.confirm')}}</el-button>
             </template>
@@ -145,12 +152,13 @@
     import {getPermissions, createPermission, editPermissions, delPermissions} from '../api/permission';
     import {getRoutes} from '../api/route';
     import elIcons from '../api/icon';
+    import {has_permission} from "../utils/permission";
 
 
     export default {
 
 
-        name: 'Permission',
+        name: 'form',
 
         setup() {
             const t = useI18n().t
@@ -160,7 +168,7 @@
             const all_route_options = ref([])
             const el_icon_options = elIcons
 
-            const permission = reactive({
+            const form = reactive({
                 parent_id: 0,
                 id: 0,
                 route_ids: [],
@@ -178,6 +186,14 @@
                     }
                 ]
             }
+
+            const permission = {
+                add: has_permission("22_1_1631171034438"),
+                edit: has_permission("22_3_1631263050215"),
+                delete: has_permission("22_2_1631189149693"),
+            }
+
+
             const loadData = () => {
                 getPermissions().then(res => {
                     all_permission.value = res.data.list;
@@ -193,26 +209,26 @@
             }
             const addPermission = (data: { id: number; children: Array<any> }) => {
                 if (data) {
-                    permission.parent_id = data.id;
-                    permission.id = 0;
-                    permission.route_ids = [];
-                    permission.key = `${data.id}_${data.children.length + 1}_${+new Date()}`;
+                    form.parent_id = data.id;
+                    form.id = 0;
+                    form.route_ids = [];
+                    form.key = `${data.id}_${data.children.length + 1}_${+new Date()}`;
                 } else {
-                    permission.parent_id = 0;
-                    permission.id = 0;
-                    permission.route_ids = [];
-                    permission.key = `${0}_${0}_${+new Date()}`;
+                    form.parent_id = 0;
+                    form.id = 0;
+                    form.route_ids = [];
+                    form.key = `${0}_${0}_${+new Date()}`;
                 }
                 visible.setting_permission = true;
             }
             const editPermission = (data: { parent_id: number; id: number; key: string; icon: string; routes: { map: (arg0: (route: { id: number; }) => number) => never[]; }; name: string; }) => {
                 if (data) {
-                    permission.parent_id = data.parent_id;
-                    permission.id = data.id;
-                    permission.key = data.key;
-                    permission.icon = data.icon;
-                    permission.route_ids = data.routes.map((route: { id: number }) => route.id);
-                    permission.name = data.name;
+                    form.parent_id = data.parent_id;
+                    form.id = data.id;
+                    form.key = data.key;
+                    form.icon = data.icon;
+                    form.route_ids = data.routes.map((route: { id: number }) => route.id);
+                    form.name = data.name;
                 }
                 visible.setting_permission = true;
 
@@ -222,15 +238,15 @@
                 submit_loading.value = true;
                 if (post_permission_form.value) {
 
-                    if (permission.id) {
-                        editPermissions(permission).then(res => {
+                    if (form.id) {
+                        editPermissions(form).then(res => {
                             visible.setting_permission = false;
                             ElMessage.success(t('i18n.success'))
                             loadData();
                         }).catch(() => {
                         });
                     } else {
-                        createPermission(permission).then(res => {
+                        createPermission(form).then(res => {
                             visible.setting_permission = false;
                             ElMessage.success(t('i18n.success'))
                             loadData();
@@ -242,7 +258,7 @@
 
                 submit_loading.value = false;
             }
-            const disablePermission = (data: { parent_id: number; id: number; }) => {
+            const deletePermission = (data: { parent_id: number; id: number; }) => {
                 ElMessageBox.confirm(data.parent_id ? t('i18n.confirm_delete_btn_permission') :
                     t('i18n.confirm_delete_page_permission'), t('i18n.prompt'), {
                     type: 'warning',
@@ -271,9 +287,10 @@
                 all_permission,
                 all_route_options,
                 el_icon_options,
-                permission,
+                form,
                 post_permission_rules,
 
+                permission,
                 visible,
 
                 loadData,
@@ -281,7 +298,7 @@
                 addPermission,
                 editPermission,
                 saveData,
-                disablePermission,
+                deletePermission,
 
             }
 
@@ -290,53 +307,49 @@
 
     };
 </script>
-<style scoped>
+<style scoped lang="sass">
 
-    .contain {
-        background: #fff;
-        padding: 10px;
-        margin-bottom: 20px;
-    }
+    .contain
+        background: #fff
+        padding: 10px
+        margin-bottom: 20px
 
-    .permission_item {
-        display: inline-block;
-        width: 393px;
-        height: 210px;
-        margin: 0 20px 20px 0;
-    }
-
-    .nav_name {
-        font-size: 14px;
-        color: deepskyblue;
-
-    }
+        .permission_item
+            display: inline-block
+            width: 393px
+            height: 210px
+            margin: 0 20px 20px 0
 
 
-    .group_name {
-        font-size: 20px;
-        color: orangered;
-    }
+        .nav_name
+            font-size: 14px
+            color: deepskyblue
 
-    .sub_permission_list {
-        height: 120px;
-        overflow: auto;
-    }
 
-    .sub_permission {
-        margin: 0 10px 10px 0;
-        cursor: pointer;
-    }
+        .group_name
+            font-size: 20px
+            color: orangered
 
-    .new {
-        margin-bottom: 20px;
-    }
 
-    .no_data {
-        text-align: center;
-        line-height: 100px;
-        color: #999;
-        font-size: 16px;
-    }
+        .sub_permission_list
+            height: 120px
+            overflow: auto
+
+
+        .sub_permission
+            margin: 0 10px 10px 0
+            cursor: pointer
+
+
+        .new
+            margin-bottom: 20px
+
+        .no_data
+            text-align: center
+            line-height: 100px
+            color: #999
+            font-size: 16px
+
 </style>
 
 

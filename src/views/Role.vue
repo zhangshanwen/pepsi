@@ -2,7 +2,7 @@
     <div>
         <div class="contain">
             <el-button type="primary" @click="loadData()">{{t('i18n.search')}}</el-button>
-            <el-button type="primary" @click="clickNewData()">{{t('i18n.new')}}</el-button>
+            <el-button type="primary" v-if="permission.add" @click="clickNewData()">{{t('i18n.new')}}</el-button>
             <el-divider></el-divider>
             <el-table
                     v-loading="pagination.loading"
@@ -12,9 +12,11 @@
                     highlight-current-row
                     header-cell-class-name="table-header-class"
                     style="width:100%">
-                <el-table-column :label="t('field.id')"
-                                 property="id"
+                <el-table-column :label="t('field.index')"
                                  align="center">
+                    <template #default="scope">
+                        <p>{{scope.$index+1+ (pagination.page_index-1)*pagination.page_size}}</p>
+                    </template>
                 </el-table-column>
                 <el-table-column :label="t('field.name')"
                                  property="name"
@@ -32,19 +34,19 @@
                 </el-table-column>
 
                 <el-table-column :label="t('i18n.permission')"
-                                 align="center">
+                                 align="center" v-if="permission.change_permission">
                     <template #default="scope">
-                        <el-button type="text" @click=clickPermission(scope.row)>{{t('i18n.change')}}</el-button>
+                        <el-button type="text" v-if="permission.change_permission" @click=clickPermission(scope.row)>{{t('i18n.change')}}</el-button>
                     </template>
 
                 </el-table-column>
                 <el-table-column :label="t('i18n.operate')"
-                                 align="center">
+                                 align="center" v-if="permission.edit|| permission.delete">
                     <template #default="scope">
-                        <el-button type="text" @click=clickEditData(scope.row)>
+                        <el-button type="text" v-if="permission.edit" @click=clickEditData(scope.row)>
                             {{t('i18n.edit')}}
                         </el-button>
-                        <el-button type="text" @click="clickDeleteData(scope.row.id)">
+                        <el-button type="text" v-if="permission.delete" @click="clickDeleteData(scope.row.id)">
                             {{t('i18n.delete')}}
                         </el-button>
                     </template>
@@ -118,6 +120,7 @@
     import tableApi from "../components/api/table";
     import {getRolePermissions} from "../api/rolePermission";
     import {getRoles, createRole, editRole, deleteRole} from "../api/role";
+    import {has_permission} from "../utils/permission";
 
 
     export default {
@@ -146,6 +149,14 @@
                 username: [{required: true, message: table_api.t('i18n.pls_input_username'), trigger: 'blur'}],
                 password: [{required: true, message: table_api.t('i18n.pls_input_password'), trigger: 'blur'}]
             }
+            const permission = {
+                add: has_permission("31_1_1631277588024"),
+                edit: has_permission("31_2_1631277662260"),
+                delete: has_permission("31_3_1631277678919"),
+                change_permission: has_permission("30_5_1631276967393"),
+            }
+
+
             const clickNewData = () => {
                 form.name = ''
                 form.is_edit = false
@@ -196,6 +207,7 @@
 
                 form,
                 rules,
+                permission,
                 visible,
                 disable,
                 role_permissions,
@@ -210,13 +222,12 @@
     };
 </script>
 
-<style scoped>
+<style scoped lang="sass">
 
-    .contain {
-        background: #fff;
-        padding: 10px;
-        margin-bottom: 20px;
-    }
+    .contain
+        background: #fff
+        padding: 10px
+        margin-bottom: 20px
 
 
 </style>

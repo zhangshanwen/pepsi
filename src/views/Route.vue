@@ -11,9 +11,11 @@
                     highlight-current-row
                     header-cell-class-name="table-header-class"
                     style="width:100%">
-                <el-table-column :label="t('field.id')"
-                                 property="id"
+                <el-table-column :label="t('field.index')"
                                  align="center">
+                    <template #default="scope">
+                        <p>{{scope.$index+1}}</p>
+                    </template>
                 </el-table-column>
                 <el-table-column :label="t('field.path')"
                                  property="path"
@@ -50,13 +52,13 @@
     };
 </script>
 
-<style scoped>
+<style scoped lang="sass">
 
-    .contain {
-        background: #fff;
-        padding: 10px;
-        margin-bottom: 20px;
-    }
+    .contain
+        background: #fff
+        padding: 10px
+        margin-bottom: 20px
+
 
 
 </style>

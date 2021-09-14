@@ -1,5 +1,7 @@
 import i18n from '../plugins/i18n';
 
+import router from "../router";
+
 import {ElMessage} from 'element-plus';
 
 import axios from 'axios';
@@ -41,15 +43,15 @@ request.interceptors.response.use(
             return Promise.reject(response);
         }
     },
-    (error) => {
+    async (error) => {
         if (error.response.status === 401 && window.location.hash !== '#/login') {
             localStorage.removeItem('ms_username');
             removeToken();
             i18n.global.t('i18n.authentication_failure_pls_log_back_in')
-            location.href = "/"
+            await router.push('/')
             return;
         } else if (error.response.status === 403) {
-            location.href = "/403"
+            await router.push('/403')
             return;
         } else if (error.response.status === 404) {
             ElMessage.error(i18n.global.t('i18n.the_system_is_busy_pls_try_again_later'))

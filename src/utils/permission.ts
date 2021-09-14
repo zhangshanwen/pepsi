@@ -2,10 +2,9 @@ import {jsonencode, jsondecode} from './base64'
 
 const permissions = 'permissions'
 const MenusKey = 'PERMISSIONS_MENUS'
-const permission_cache = "permission_cache"
 
 export function has_permission(key: string) {
-    return permissions.lastIndexOf(key) < 0
+    return get_permissions().lastIndexOf(key) !== -1
 }
 
 export function setPermissions(data: any[]) {

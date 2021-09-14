@@ -3,7 +3,7 @@ import request from '../utils/request'
 export function getUsers(pagination: { page_index: number; page_size: number; sort: boolean; order: string }) {
     return request.get(`/v1/users`, {
         params: {
-            page: pagination.page_index,
+            page_index: pagination.page_index,
             page_size: pagination.page_size,
             sort: pagination.sort,
             order: pagination.order,
@@ -25,9 +25,9 @@ export function editUser(form: { id: number; username: string }) {
 }
 
 export function deleteUser(form: { id: number }) {
-    return request.delete(`/v1/user/${form.id}`)
+    return request.delete(`/v1/users/${form.id}`)
 }
 
 export function resetUserPassword(form: { id: number }) {
-    return request.get(`/v1/user/password/reset/${form.id}`)
+    return request.get(`/v1/users/password/reset/${form.id}`)
 }
