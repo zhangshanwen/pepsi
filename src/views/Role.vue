@@ -36,7 +36,9 @@
                 <el-table-column :label="t('i18n.permission')"
                                  align="center" v-if="permission.change_permission">
                     <template #default="scope">
-                        <el-button round  type="text" v-if="permission.change_permission" @click=clickPermission(scope.row)>{{t('i18n.change')}}</el-button>
+                        <el-button round type="text" v-if="permission.change_permission"
+                                   @click=clickPermission(scope.row)>{{t('i18n.change')}}
+                        </el-button>
                     </template>
 
                 </el-table-column>
@@ -74,7 +76,7 @@
                 v-model="visible.save"
                 width="30%"
                 center>
-            <el-form :model="form" :rules="rules">
+            <el-form :model="form" :rules="rules" label-width="80px">
                 <el-form-item :label="t('field.id')" v-if="form.is_edit">
                     <el-input disabled v-model="form.id"></el-input>
                 </el-form-item>
@@ -83,13 +85,16 @@
                 </el-form-item>
 
             </el-form>
+            <template #footer>
 
-            <el-button round @click="visible.save = false">{{t('i18n.cancel')}}</el-button>
-            <el-button round v-if="form.is_edit" type="primary" :disabled="visible.edit" @click="editData()">
-                {{t('i18n.confirm')}}
-            </el-button>
-            <el-button round v-else type="primary" :disabled="disable.is_new" @click="newData()">{{t('i18n.confirm')}}
-            </el-button>
+                <el-button round @click="visible.save = false">{{t('i18n.cancel')}}</el-button>
+                <el-button round v-if="form.is_edit" type="primary" :disabled="visible.edit" @click="editData()">
+                    {{t('i18n.confirm')}}
+                </el-button>
+                <el-button round v-else type="primary" :disabled="disable.is_new" @click="newData()">
+                    {{t('i18n.confirm')}}
+                </el-button>
+            </template>
         </el-dialog>
         <el-drawer
                 :title="t('i18n.change_permission')"

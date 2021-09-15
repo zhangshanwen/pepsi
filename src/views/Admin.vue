@@ -105,7 +105,7 @@
                 v-model="visible.save"
                 width="30%"
                 center>
-            <el-form :model="form" :rules="rules">
+            <el-form :model="form" :rules="rules" label-width="80px">
                 <el-form-item :label="t('field.id')" v-if="form.is_edit">
                     <el-input disabled v-model="form.id"></el-input>
                 </el-form-item>
@@ -117,13 +117,15 @@
                 </el-form-item>
 
             </el-form>
-
-            <el-button round @click="visible.save = false">{{t('i18n.cancel')}}</el-button>
-            <el-button round v-if="form.is_edit" type="primary" :disabled="disable.is_edit" @click="editData()">
-                {{t('i18n.confirm')}}
-            </el-button>
-            <el-button round v-else type="primary" :disabled="disable.is_new" @click="newData()">{{t('i18n.confirm')}}
-            </el-button>
+            <template #footer>
+                <el-button round @click="visible.save = false">{{t('i18n.cancel')}}</el-button>
+                <el-button round v-if="form.is_edit" type="primary" :disabled="disable.is_edit" @click="editData()">
+                    {{t('i18n.confirm')}}
+                </el-button>
+                <el-button round v-else type="primary" :disabled="disable.is_new" @click="newData()">
+                    {{t('i18n.confirm')}}
+                </el-button>
+            </template>
         </el-dialog>
         <el-dialog :title="t('i18n.change_role')" v-model="visible.change_role" width="20%">
             <div class="role_options">

@@ -3,6 +3,8 @@ import {useI18n} from "vue-i18n";
 import formatterApi from "./formatter";
 import {confirmBox} from "./message_box";
 
+import {ElMessage} from 'element-plus'
+
 const tableApi = (
     fetchPageApi: {
         (pagination: any): Promise<any>
@@ -45,12 +47,14 @@ const tableApi = (
         }
         const newData = async () => {
             createApi(form).then((res: any) => {
+                ElMessage.success(t('i18n.success'))
                 visible.save = false;
                 loadData();
             }).catch();
         }
         const editData = async () => {
             editApi(form).then((res: any) => {
+                    ElMessage.success(t('i18n.success'))
                     visible.save = false;
                     loadData();
                 }
@@ -58,6 +62,7 @@ const tableApi = (
         }
         const deleteOne = async () => {
             deleteApi(form).then((res: any) => {
+                    ElMessage.success(t('i18n.success'))
                     visible.delete = false;
                     loadData();
                 }
