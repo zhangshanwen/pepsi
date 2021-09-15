@@ -10,13 +10,15 @@
         </ul>
         <div class="tags-close-box">
             <el-dropdown @command="handleTags">
-                <el-button size="mini" type="primary">
+                <el-button round size="mini" type="primary">
                     {{t('i18n.tags')}}<i class="el-icon-arrow-down el-icon--right"></i>
                 </el-button>
-                <el-dropdown-menu size="small" slot="dropdown">
-                    <el-dropdown-item command="other">{{t('i18n.closeOther')}}</el-dropdown-item>
-                    <el-dropdown-item command="all">{{t('i18n.closeAll')}}</el-dropdown-item>
-                </el-dropdown-menu>
+                <template #dropdown>
+                    <el-dropdown-menu size="small">
+                        <el-dropdown-item command="other">{{t('i18n.closeOther')}}</el-dropdown-item>
+                        <el-dropdown-item command="all">{{t('i18n.closeAll')}}</el-dropdown-item>
+                    </el-dropdown-menu>
+                </template>
             </el-dropdown>
         </div>
     </div>
@@ -127,7 +129,7 @@
         .tags-li
             float: left
             margin: 3px 5px 2px 3px
-            border-radius: 3px
+            border-radius: 10px
             font-size: 12px
             overflow: hidden
             cursor: pointer

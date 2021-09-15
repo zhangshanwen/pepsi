@@ -82,23 +82,23 @@
 
             </el-form>
 
-            <el-button @click="visible.save = false">{{t('i18n.cancel')}}</el-button>
-            <el-button v-if="form.is_edit" type="primary" :disabled="disable.is_edit" @click="editData()">
+            <el-button round @click="visible.save = false">{{t('i18n.cancel')}}</el-button>
+            <el-button round v-if="form.is_edit" type="primary" :disabled="disable.is_edit" @click="editData()">
                 {{t('i18n.confirm')}}
             </el-button>
-            <el-button v-else type="primary" :disabled="disable.is_new" @click="newData()">{{t('i18n.confirm')}}
+            <el-button round v-else type="primary" :disabled="disable.is_new" @click="newData()">{{t('i18n.confirm')}}
             </el-button>
         </el-dialog>
         <el-dialog :title="t('i18n.delete')" v-model="visible.delete" width="20%">
             <div slot="footer" class="dialog-footer">
-                <el-button type="primary" @click="visible.delete = false">{{t('i18n.cancel')}}</el-button>
-                <el-button type="primary" @click="deleteOne()">{{t('i18n.confirm')}}</el-button>
+                <el-button round type="primary" @click="visible.delete = false">{{t('i18n.cancel')}}</el-button>
+                <el-button round type="primary" @click="deleteOne()">{{t('i18n.confirm')}}</el-button>
             </div>
         </el-dialog>
         <el-dialog :title="t('i18n.reset_password')" v-model="visible.reset_password" width="20%">
             <div slot="footer" class="dialog-footer">
-                <el-button type="primary" @click="visible.reset_password = false">{{t('i18n.cancel')}}</el-button>
-                <el-button type="primary" @click="resetPassword()">{{t('i18n.confirm')}}</el-button>
+                <el-button round type="primary" @click="visible.reset_password = false">{{t('i18n.cancel')}}</el-button>
+                <el-button round type="primary" @click="resetPassword()">{{t('i18n.confirm')}}</el-button>
             </div>
         </el-dialog>
 

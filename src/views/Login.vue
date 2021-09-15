@@ -6,7 +6,6 @@
                      class="ms-content">
                 <el-form-item prop="username">
                     <el-input v-model="param.username" :placeholder="t('i18n.pls_input_username_mobile')">
-                        <el-button slot="prepend" icon="el-icon-lx-people"></el-button>
                     </el-input>
                 </el-form-item>
                 <el-form-item prop="password">
@@ -14,11 +13,10 @@
                             type="password"
                             :placeholder="t('i18n.pls_input_password')"
                             v-model="param.password">
-                        <el-button slot="prepend" icon="el-icon-lx-lock"></el-button>
                     </el-input>
                 </el-form-item>
                 <el-form-item class="login-btn">
-                    <el-button type="primary" round @click="submitForm()">
+                    <el-button round type="primary" @click="submitForm()">
                         {{t('i18n.login')}}
                     </el-button>
                 </el-form-item>
@@ -125,6 +123,8 @@
 </script>
 
 <style scoped lang="sass">
+
+
     .login-contain
         position: relative
         width: 100%
@@ -170,6 +170,9 @@
                 height: 36px
                 margin:
                     bottom: 10px
+                color: aqua
+                background-color: black
+                -webkit-box-reflect: below 1px linear-gradient(transparent, rgba(6, 133, 133, 0.3))
 
 
 </style>

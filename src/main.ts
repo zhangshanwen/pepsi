@@ -2,8 +2,9 @@ import {createApp} from 'vue'
 import App from './App.vue'
 import store from './store';
 import router from './router/index'
-import installElement from './plugins/element';
 import i18n from './plugins/i18n';
+import installElement from './plugins/element';
+
 
 const app = createApp(App);
 

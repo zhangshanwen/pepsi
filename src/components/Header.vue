@@ -11,7 +11,7 @@
                 <div class="user-avatar">
                     <img src="../assets/img/img.jpg"/>
                 </div>
-                <el-dropdown class="user-name" trigger="click" @command="handleCommand">
+                <el-dropdown  class="user-name" trigger="click" @command="handleCommand">
                     <span class="el-dropdown-link">
                         {{username}}
                         <i class="el-icon-caret-bottom"></i>
@@ -38,8 +38,8 @@
 
             </el-form>
 
-            <el-button @click="changePasswordVisible = false">{{t('i18n.cancel')}}</el-button>
-            <el-button type="primary" :disabled="changePasswordDisable" @click="onchangePassword()">
+            <el-button round @click="changePasswordVisible = false">{{t('i18n.cancel')}}</el-button>
+            <el-button round type="primary" :disabled="changePasswordDisable" @click="onchangePassword()">
                 {{t('i18n.confirm')}}
             </el-button>
         </el-dialog>

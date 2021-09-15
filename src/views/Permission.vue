@@ -1,6 +1,6 @@
 <template>
     <div class="contain">
-        <el-button type="success" class="new"
+        <el-button round type="success" class="new"
                    v-if="permission.add"
                    @click="addPermission(null)">{{t('i18n.new')}}
         </el-button>
@@ -134,9 +134,9 @@
                 </el-form-item>
             </el-form>
             <template #footer class="dialog-footer">
-                <el-button @click="visible.setting_permission = false">{{t('i18n.cancel')}}</el-button>
+                <el-button round @click="visible.setting_permission = false">{{t('i18n.cancel')}}</el-button>
 
-                <el-button type="primary" @click="saveData" :loading="submit_loading">{{t('i18n.confirm')}}</el-button>
+                <el-button round type="primary" @click="saveData" :loading="submit_loading">{{t('i18n.confirm')}}</el-button>
             </template>
         </el-dialog>
     </div>

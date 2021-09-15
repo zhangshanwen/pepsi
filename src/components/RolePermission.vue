@@ -1,7 +1,7 @@
 <template>
     <div class="contain">
 
-        <el-button class="save-button" type="primary" @click="clickSaveData" :disabled="disable.save">
+        <el-button round class="save-button" type="primary" @click="clickSaveData" :disabled="disable.save">
             {{$t('i18n.save')}}
         </el-button>
         <el-card v-for="(group,index) in role_permissions" :key="index"

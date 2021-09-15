@@ -3,8 +3,8 @@
         <div class="error-code">4<span>0</span>4</div>
         <div class="error-desc">{{t('i18n.not_found')}}</div>
         <div class="error-handle">
-            <el-button type="primary" size="large" @click="goHome">{{t('i18n.go_home')}}</el-button>
-            <el-button class="error-btn" type="primary" size="large" @click="goBack">{{t('i18n.go_back')}}</el-button>
+            <el-button round type="primary" size="large" @click="goHome">{{t('i18n.go_home')}}</el-button>
+            <el-button round class="error-btn" type="primary" size="large" @click="goBack">{{t('i18n.go_back')}}</el-button>
         </div>
     </div>
 </template>

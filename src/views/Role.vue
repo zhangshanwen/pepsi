@@ -1,8 +1,8 @@
 <template>
     <div>
         <div class="contain">
-            <el-button type="primary" @click="loadData()">{{t('i18n.search')}}</el-button>
-            <el-button type="primary" v-if="permission.add" @click="clickNewData()">{{t('i18n.new')}}</el-button>
+            <el-button round type="primary" @click="loadData()">{{t('i18n.search')}}</el-button>
+            <el-button round type="primary" v-if="permission.add" @click="clickNewData()">{{t('i18n.new')}}</el-button>
             <el-divider></el-divider>
             <el-table
                     v-loading="pagination.loading"
@@ -36,7 +36,7 @@
                 <el-table-column :label="t('i18n.permission')"
                                  align="center" v-if="permission.change_permission">
                     <template #default="scope">
-                        <el-button type="text" v-if="permission.change_permission" @click=clickPermission(scope.row)>{{t('i18n.change')}}</el-button>
+                        <el-button round  type="text" v-if="permission.change_permission" @click=clickPermission(scope.row)>{{t('i18n.change')}}</el-button>
                     </template>
 
                 </el-table-column>
@@ -84,17 +84,17 @@
 
             </el-form>
 
-            <el-button @click="visible.save = false">{{t('i18n.cancel')}}</el-button>
-            <el-button v-if="form.is_edit" type="primary" :disabled="visible.edit" @click="editData()">
+            <el-button round @click="visible.save = false">{{t('i18n.cancel')}}</el-button>
+            <el-button round v-if="form.is_edit" type="primary" :disabled="visible.edit" @click="editData()">
                 {{t('i18n.confirm')}}
             </el-button>
-            <el-button v-else type="primary" :disabled="disable.is_new" @click="newData()">{{t('i18n.confirm')}}
+            <el-button round v-else type="primary" :disabled="disable.is_new" @click="newData()">{{t('i18n.confirm')}}
             </el-button>
         </el-dialog>
         <el-dialog :title="t('i18n.delete')" :visible.sync="visible.delete" width="20%">
             <div slot="footer" class="dialog-footer">
-                <el-button type="primary" @click="visible.delete = false">{{t('i18n.cancel')}}</el-button>
-                <el-button type="primary" @click="deleteOne()">{{t('i18n.confirm')}}</el-button>
+                <el-button round type="primary" @click="visible.delete = false">{{t('i18n.cancel')}}</el-button>
+                <el-button round type="primary" @click="deleteOne()">{{t('i18n.confirm')}}</el-button>
             </div>
         </el-dialog>
         <el-drawer
