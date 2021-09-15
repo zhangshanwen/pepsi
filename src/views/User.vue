@@ -1,8 +1,8 @@
 <template>
     <div>
         <div class="contain">
-            <el-button type="primary" @click="loadData()">{{t('i18n.search')}}</el-button>
-            <el-button type="primary" v-if="permission.add" @click="clickNewData()">{{t('i18n.new')}}</el-button>
+            <el-button round type="primary" @click="loadData()">{{t('i18n.search')}}</el-button>
+            <el-button round type="primary" v-if="permission.add" @click="clickNewData()">{{t('i18n.new')}}</el-button>
             <el-divider></el-divider>
             <el-table
                     v-loading="pagination.loading"
@@ -37,13 +37,24 @@
                                  :formatter="formatterTime"
                                  align="center">
                 </el-table-column>
-                <el-table-column :label="t('i18n.operate')"
-                                 align="center" v-if="permission.rest_password||permission.edit || permission.delete">
+                <el-table-column :label="t('i18n.password')"
+                                 align="center" v-if="permission.rest_password">
                     <template #default="scope">
-                        <el-button type="text" v-if="permission.rest_password" @click="clickResetPassword(scope.row.id)">{{t('i18n.reset_password')}}
+                        <el-button type="text" v-if="permission.rest_password"
+                                   @click="clickResetPassword(scope.row.id)">{{t('i18n.reset')}}
                         </el-button>
-                        <el-button type="text" v-if="permission.edit" @click=clickEditData(scope.row)>{{t('i18n.edit')}}</el-button>
-                        <el-button type="text" v-if="permission.delete"  @click="clickDeleteData(scope.row.id)">{{t('i18n.delete')}}</el-button>
+                    </template>
+                </el-table-column>
+
+                <el-table-column :label="t('i18n.operate')"
+                                 align="center" v-if="permission.edit || permission.delete">
+                    <template #default="scope">
+                        <el-button type="text" v-if="permission.edit" @click=clickEditData(scope.row)>
+                            {{t('i18n.edit')}}
+                        </el-button>
+                        <el-button type="text" v-if="permission.delete" @click="clickDeleteData(scope.row.id)">
+                            {{t('i18n.delete')}}
+                        </el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -89,18 +100,6 @@
             <el-button round v-else type="primary" :disabled="disable.is_new" @click="newData()">{{t('i18n.confirm')}}
             </el-button>
         </el-dialog>
-        <el-dialog :title="t('i18n.delete')" v-model="visible.delete" width="20%">
-            <div slot="footer" class="dialog-footer">
-                <el-button round type="primary" @click="visible.delete = false">{{t('i18n.cancel')}}</el-button>
-                <el-button round type="primary" @click="deleteOne()">{{t('i18n.confirm')}}</el-button>
-            </div>
-        </el-dialog>
-        <el-dialog :title="t('i18n.reset_password')" v-model="visible.reset_password" width="20%">
-            <div slot="footer" class="dialog-footer">
-                <el-button round type="primary" @click="visible.reset_password = false">{{t('i18n.cancel')}}</el-button>
-                <el-button round type="primary" @click="resetPassword()">{{t('i18n.confirm')}}</el-button>
-            </div>
-        </el-dialog>
 
     </div>
 
@@ -114,6 +113,7 @@
 
     import {getUsers, createUser, editUser, deleteUser, resetUserPassword} from '../api/user';
     import tableApi from "../components/api/table"
+    import {confirmBox, confirmTipBox} from "../components/api/message_box"
     import {has_permission} from "../utils/permission";
 
     export default defineComponent({
@@ -163,30 +163,24 @@
 
                 visible.save = true;
             }
-            const clickDeleteData = (operate_id: number) => {
-                form.id = operate_id
-                visible.delete = true;
-            }
-            const clickResetPassword = (operate_id: number) => {
-                form.id = operate_id
-                visible.reset_password = true;
-            }
-
 
             const resetPassword = () => {
                 resetUserPassword(form).then((res: { data: { password: string; }; }) => {
                         visible.reset_password = false;
-                        ElMessageBox.confirm(table_api.t('i18n.password_reset_success') + ':' + res.data.password, table_api.t('i18n.prompt'), {
-                            type: 'warning',
-                            beforeClose: (action, instance, done) => {
-                                done();
-                                table_api.loadData();
-                            }
-                        }).catch(() => {
-                        });
+                        confirmTipBox(table_api.loadData, {
+                            message: table_api.t('i18n.password_reset_success') + ':' + res.data.password
+                        })
                     }
-                );
+                ).catch(() => {
+                });
             }
+            const clickResetPassword = (operate_id: number) => {
+                form.id = operate_id
+                confirmBox(resetPassword, {
+                    message: table_api.t('i18n.reset_password')
+                })
+            }
+
             return {
                 ...table_api,
 
@@ -199,7 +193,6 @@
 
                 clickNewData,
                 clickEditData,
-                clickDeleteData,
                 clickResetPassword,
                 resetPassword,
             }

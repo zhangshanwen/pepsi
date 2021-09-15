@@ -61,13 +61,19 @@
                         </el-button>
                     </template>
                 </el-table-column>
-                <el-table-column :label="t('i18n.operate')"
-                                 align="center" v-if="permission.rest_password || permission.edit || permission.delete">
+
+                <el-table-column :label="t('i18n.password')"
+                                 align="center" v-if="permission.rest_password ">
                     <template #default="scope">
                         <el-button type="text" v-if="permission.rest_password"
                                    @click="clickResetPassword(scope.row.id)">
-                            {{t('i18n.reset_password')}}
+                            {{t('i18n.reset')}}
                         </el-button>
+                    </template>
+                </el-table-column>
+                <el-table-column :label="t('i18n.operate')"
+                                 align="center" v-if="permission.edit || permission.delete">
+                    <template #default="scope">
                         <el-button type="text" v-if="permission.edit" @click=clickEditData(scope.row)>
                             {{t('i18n.edit')}}
                         </el-button>
@@ -119,18 +125,6 @@
             <el-button round v-else type="primary" :disabled="disable.is_new" @click="newData()">{{t('i18n.confirm')}}
             </el-button>
         </el-dialog>
-        <el-dialog :title="t('i18n.delete')" v-model="visible.delete" width="20%">
-            <div slot="footer" class="dialog-footer">
-                <el-button round type="primary" @click="visible.delete = false">{{t('i18n.cancel')}}</el-button>
-                <el-button round type="primary" @click="deleteOne()">{{t('i18n.confirm')}}</el-button>
-            </div>
-        </el-dialog>
-        <el-dialog :title="t('i18n.reset_password')" v-model="visible.reset_password" width="20%">
-            <div slot="footer" class="dialog-footer">
-                <el-button round type="primary" @click="visible.reset_password = false">{{t('i18n.cancel')}}</el-button>
-                <el-button round type="primary" @click="resetPassword()">{{t('i18n.confirm')}}</el-button>
-            </div>
-        </el-dialog>
         <el-dialog :title="t('i18n.change_role')" v-model="visible.change_role" width="20%">
             <div class="role_options">
                 <el-select-v2
@@ -160,7 +154,6 @@
 
 <script lang="ts">
     import {reactive, ref, computed, onMounted, onUnmounted, nextTick} from "vue";
-    import {ElMessageBox} from 'element-plus';
 
     import RolePermission from "../components/RolePermission.vue";
 
@@ -169,6 +162,7 @@
     import {getRolePermissions} from "../api/rolePermission";
     import {getRoles} from "../api/role";
     import {has_permission} from "../utils/permission";
+    import {confirmBox, confirmTipBox} from "../components/api/message_box";
 
     export default {
         name: "Admin",
@@ -240,16 +234,6 @@
 
                 visible.save = true
             }
-            const clickDeleteData = (operate_id: number) => {
-                form.id = operate_id
-
-                visible.delete = true
-            }
-            const clickResetPassword = (operate_id: number) => {
-                form.id = operate_id
-
-                visible.reset_password = true
-            }
             const clickChangeRole = async (row: { id: number; role: { name: string; id: number; }; }) => {
                 if (role_options.value.length === 0) {
                     await initRoleOption();
@@ -304,20 +288,21 @@
                 });
             }
             const resetPassword = () => {
-                resetAdminPassword(form.id).then((res: { data: { password: string; }; }) => {
+                resetAdminPassword(form).then((res: { data: { password: string; }; }) => {
                         visible.reset_password = false;
-                        ElMessageBox.confirm(table_api.t('i18n.password_reset_success') + ':' + res.data.password, table_api.t('i18n.prompt'), {
-                            type: 'warning',
-                            beforeClose: (action, instance, done) => {
-                                done();
-                                table_api.loadData();
-                            }
-                        }).catch(() => {
-                        });
+                        confirmTipBox(table_api.loadData, {
+                            message: table_api.t('i18n.password_reset_success') + ':' + res.data.password
+                        })
                     }
-                );
+                ).catch(() => {
+                });
             }
-
+            const clickResetPassword = (operate_id: number) => {
+                form.id = operate_id
+                confirmBox(resetPassword, {
+                    message: table_api.t('i18n.reset_password')
+                })
+            }
             const roleType = (role_name: string) => {
                 const remainder = role_name.length % 5;
                 switch (remainder) {
@@ -356,7 +341,6 @@
 
                 clickNewData,
                 clickEditData,
-                clickDeleteData,
                 clickChangeRole,
                 clickPermission,
                 clickResetPassword,

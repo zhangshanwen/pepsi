@@ -1,6 +1,7 @@
 import {reactive, ref, onMounted} from "vue";
 import {useI18n} from "vue-i18n";
 import formatterApi from "./formatter";
+import {confirmBox} from "./message_box";
 
 const tableApi = (
     fetchPageApi: {
@@ -13,7 +14,9 @@ const tableApi = (
         save: boolean,
         delete: boolean,
     },
-    form: {}
+    form: {
+        id: number,
+    }
     ) => {
         const t = useI18n().t
 
@@ -60,6 +63,12 @@ const tableApi = (
                 }
             ).catch();
         }
+        const clickDeleteData = (operate_id: number) => {
+            form.id = operate_id
+            confirmBox(deleteOne, {
+                message: t('i18n.delete')
+            })
+        }
         const handleSizeChange = async (page_size: number) => {
             pagination.page_size = page_size;
             await loadData();
@@ -83,6 +92,7 @@ const tableApi = (
             newData,
             editData,
             deleteOne,
+            clickDeleteData,
 
             handleSizeChange,
             handleCurrentChange,

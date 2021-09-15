@@ -91,12 +91,6 @@
             <el-button round v-else type="primary" :disabled="disable.is_new" @click="newData()">{{t('i18n.confirm')}}
             </el-button>
         </el-dialog>
-        <el-dialog :title="t('i18n.delete')" :visible.sync="visible.delete" width="20%">
-            <div slot="footer" class="dialog-footer">
-                <el-button round type="primary" @click="visible.delete = false">{{t('i18n.cancel')}}</el-button>
-                <el-button round type="primary" @click="deleteOne()">{{t('i18n.confirm')}}</el-button>
-            </div>
-        </el-dialog>
         <el-drawer
                 :title="t('i18n.change_permission')"
                 v-model="visible.change_permission"
@@ -214,7 +208,6 @@
 
                 clickNewData,
                 clickEditData,
-                clickDeleteData,
                 clickPermission,
                 roleType,
             }

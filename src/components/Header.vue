@@ -9,9 +9,9 @@
             <div class="header-user-con">
 
                 <div class="user-avatar">
-                    <img src="../assets/img/img.jpg"/>
+                    <el-image :src="user_avatar"/>
                 </div>
-                <el-dropdown  class="user-name" trigger="click" @command="handleCommand">
+                <el-dropdown class="user-name" trigger="click" @command="handleCommand">
                     <span class="el-dropdown-link">
                         {{username}}
                         <i class="el-icon-caret-bottom"></i>
@@ -55,7 +55,7 @@
 
     import {changePassword} from '../api/admin';
     import {removeToken} from '../utils/auth';
-
+    import user_avatar from "../assets/img/img.jpg"
 
     export default defineComponent({
         setup() {
@@ -69,7 +69,6 @@
 
             const t = useI18n().t
             const store = useStore();
-
             const collapse = computed(() => store.state.collapse);
             const changePasswordDisable = computed(() => form.password === '');
             // 侧边栏折叠
@@ -110,6 +109,7 @@
             return {
                 t,
                 collapse,
+                user_avatar,
                 username,
                 changePasswordVisible,
                 changePasswordDisable,
@@ -162,7 +162,7 @@
         .user-avatar
             margin-right: 20px
 
-            img
+            .el-image
                 display: block
                 width: 40px
                 height: 40px

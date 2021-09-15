@@ -49,6 +49,8 @@ const zh = {
         edit: '编辑',
         change: '变更',
         operate: '操作',
+        reset: '重置',
+        password: '密码',
         prompt: '提示',
         delete: '删除',
         delete_success: '删除成功!',
