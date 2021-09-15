@@ -1,18 +1,17 @@
-import i18n from '../../plugins/i18n'
-
 import {ElMessageBox} from 'element-plus'
 
 export const confirmBox = (
+    t: Function,
     actionMethod: Function,
     options: {
         message: string,
-    }
+    },
     ) => {
-        ElMessageBox.confirm(options.message, i18n.global.t('i18n.prompt'), {
+        ElMessageBox.confirm(options.message, t('i18n.prompt'), {
             type: 'warning',
             roundButton: true,
-            cancelButtonText: i18n.global.t('i18n.cancel'),
-            confirmButtonText: i18n.global.t('i18n.confirm'),
+            cancelButtonText: t('i18n.cancel'),
+            confirmButtonText: t('i18n.confirm'),
             beforeClose: (action, instance, done) => {
                 if (action === "confirm") {
                     actionMethod();
@@ -26,16 +25,17 @@ export const confirmBox = (
 ;
 
 export const confirmTipBox = (
+    t: Function,
     actionMethod: Function,
     options: {
         message: string,
-    }
+    },
     ) => {
-        ElMessageBox.confirm(options.message, i18n.global.t('i18n.prompt'), {
+        ElMessageBox.confirm(options.message, t('i18n.prompt'), {
             type: 'warning',
             roundButton: true,
-            cancelButtonText: i18n.global.t('i18n.cancel'),
-            confirmButtonText: i18n.global.t('i18n.confirm'),
+            cancelButtonText: t('i18n.cancel'),
+            confirmButtonText: t('i18n.confirm'),
             beforeClose: (action, instance, done) => {
                 actionMethod();
                 done();

@@ -167,7 +167,7 @@
             const resetPassword = () => {
                 resetUserPassword(form).then((res: { data: { password: string; }; }) => {
                         visible.reset_password = false;
-                        confirmTipBox(table_api.loadData, {
+                        confirmTipBox(table_api.t, table_api.loadData, {
                             message: table_api.t('i18n.password_reset_success') + ':' + res.data.password
                         })
                     }
@@ -176,7 +176,7 @@
             }
             const clickResetPassword = (operate_id: number) => {
                 form.id = operate_id
-                confirmBox(resetPassword, {
+                confirmBox(table_api.t, resetPassword, {
                     message: table_api.t('i18n.reset_password')
                 })
             }

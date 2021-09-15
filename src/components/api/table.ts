@@ -65,7 +65,7 @@ const tableApi = (
         }
         const clickDeleteData = (operate_id: number) => {
             form.id = operate_id
-            confirmBox(deleteOne, {
+            confirmBox(t, deleteOne, {
                 message: t('i18n.delete')
             })
         }
