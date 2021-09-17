@@ -1,6 +1,5 @@
 <template>
     <div class="contain">
-
         <el-button round class="save-button" type="primary" @click="clickSaveData" :disabled="disable.save">
             {{$t('i18n.save')}}
         </el-button>
@@ -171,8 +170,8 @@
         background: #fff
         padding: 10px
         margin-bottom: 20px
-
-
+        overflow: auto
+        height: 650px
         .save-button
             margin-bottom: 20px
 

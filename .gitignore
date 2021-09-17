@@ -5,3 +5,7 @@ dist-ssr
 *.local
 .idea
 .vscode
+nginx.conf
+.env.production
+.env.development
+defalut.conf
