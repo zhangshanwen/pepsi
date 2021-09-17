@@ -28,7 +28,7 @@
         </div>
         <el-dialog
                 :title="t('i18n.change_password')"
-                :visible.sync="changePasswordVisible"
+                v-model="changePasswordVisible"
                 width="30%"
                 center>
             <el-form :model="form" ref="change_password">
@@ -47,7 +47,7 @@
 
 </template>
 <script lang="ts">
-    import {defineComponent, computed, onMounted, reactive} from 'vue';
+    import {defineComponent, computed, onMounted, reactive, ref} from 'vue';
     import {useStore} from 'vuex';
     import {useRouter} from 'vue-router';
     import {useI18n} from 'vue-i18n';
@@ -61,7 +61,7 @@
         setup() {
             let username = localStorage.getItem("ms_username");
             username = username ? username : "admin"
-            let changePasswordVisible = false
+            const changePasswordVisible = ref(false)
             const form = reactive({
                 username: username,
                 password: ''
@@ -89,7 +89,7 @@
                     localStorage.removeItem('ms_username');
                     router.push('/login');
                 } else if (command === "change_password") {
-                    changePasswordVisible = true
+                    changePasswordVisible.value = true
                 }
             };
             const onchangePassword = () => {
@@ -114,6 +114,7 @@
                 changePasswordVisible,
                 changePasswordDisable,
                 form,
+
                 handleCommand,
                 collapseChange,
                 onchangePassword,

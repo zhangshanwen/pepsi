@@ -20,11 +20,11 @@
                     <el-tag
                             class="sub-permission"
                             v-for="sub_item in item.children"
-                            :key="sub_item.id"
                     >
-                        <el-checkbox v-model="sub_item.is_checked" @change="permissionChange(sub_item)">
-                            {{sub_item.name}}
+                        <el-checkbox v-model="sub_item.is_checked" :label="sub_item.name"
+                                     @change="permissionChange(sub_item)">
                         </el-checkbox>
+
                     </el-tag>
                 </div>
                 <p
@@ -172,14 +172,15 @@
         margin-bottom: 20px
         overflow: auto
         height: 650px
+
         .save-button
             margin-bottom: 20px
 
 
         .permission-item
             display: inline-block
-            width: 393px
-            height: 210px
+            width: 370px
+            height: 240px
             margin: 0 20px 20px 0
 
 
@@ -201,7 +202,6 @@
         .sub-permission
             margin: 0 10px 10px 0
             cursor: pointer
-
 
         .no-data
             text-align: center
