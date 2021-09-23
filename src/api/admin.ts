@@ -41,3 +41,9 @@ export function changeRole(form: { id: number; role_id: number }) {
         role_id: form.role_id,
     })
 }
+
+export function changeAdminAvatar(form: { name: string }) {
+    return request.put(`/v1/admins/avatar`, {
+        avatar: form.name
+    })
+}

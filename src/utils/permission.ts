@@ -16,9 +16,9 @@ export function get_permissions() {
 }
 
 export function savePermissionMenus(data: any[]) {
-    localStorage.setItem(MenusKey, JSON.stringify(data))
+    localStorage.setItem(MenusKey, jsonencode(data))
 }
 
 export function getPermissionMenus() {
-    return JSON.parse(<string>localStorage.getItem(MenusKey))
+    return jsondecode(localStorage.getItem(MenusKey))
 }

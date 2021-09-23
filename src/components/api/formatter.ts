@@ -1,4 +1,3 @@
-
 const formatterApi = () => {
         const formatterTime = (row: any, column: any, cellValue: number, index: any) => {
             if (cellValue > 0) {
@@ -18,10 +17,11 @@ const formatterApi = () => {
                 return '-';
             }
         }
+
         return {
 
             formatterTime,
-            formatterDate
+            formatterDate,
         }
     }
 ;

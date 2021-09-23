@@ -86,6 +86,7 @@ const tableApi = (
         onMounted(async () => {
             await loadData()
         })
+
         return {
             ...formatterApi(),
 

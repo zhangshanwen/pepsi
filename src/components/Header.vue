@@ -8,12 +8,12 @@
         <div class="header-right">
             <div class="header-user-con">
 
-                <div class="user-avatar">
-                    <el-image :src="user_avatar"/>
+                <div class="user-avatar" @click="permission.change_avatar?clickAvatar():null">
+                    <el-image :src="form.avatar.url"/>
                 </div>
                 <el-dropdown class="user-name" trigger="click" @command="handleCommand">
                     <span class="el-dropdown-link">
-                        {{username}}
+                        {{form.username}}
                         <i class="el-icon-caret-bottom"></i>
                     </span>
                     <template #dropdown>
@@ -28,7 +28,7 @@
         </div>
         <el-dialog
                 :title="t('i18n.change_password')"
-                v-model="changePasswordVisible"
+                v-model="visible.change_password"
                 width="30%"
                 center>
             <el-form :model="form" ref="change_password">
@@ -38,8 +38,31 @@
 
             </el-form>
 
-            <el-button round @click="changePasswordVisible = false">{{t('i18n.cancel')}}</el-button>
-            <el-button round type="primary" :disabled="changePasswordDisable" @click="onchangePassword()">
+            <el-button round @click="visible.change_password = false">{{t('i18n.cancel')}}</el-button>
+            <el-button round type="primary" :disabled="disable.change_password" @click="onchangePassword()">
+                {{t('i18n.confirm')}}
+            </el-button>
+        </el-dialog>
+        <el-dialog
+                :title="t('i18n.change_avatar')"
+                v-model="visible.change_avatar"
+                width="30%"
+                center>
+            <el-upload
+                    :show-file-list="false"
+                    :multiple="false"
+                    :drag="true"
+                    accept="image/png, image/jpeg"
+                    :auto-upload="false"
+                    :on-change="clickChangeAvatar"
+                    class="avatar-uploader"
+
+            >
+                <el-image v-if="avatar.url" :src="avatar.url" class="avatar"/>
+                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+            <el-button round @click="visible.change_avatar = false">{{t('i18n.cancel')}}</el-button>
+            <el-button round type="primary" @click="onchangeAvatar()">
                 {{t('i18n.confirm')}}
             </el-button>
         </el-dialog>
@@ -51,26 +74,46 @@
     import {useStore} from 'vuex';
     import {useRouter} from 'vue-router';
     import {useI18n} from 'vue-i18n';
-    import {ElMessageBox} from 'element-plus';
 
-    import {changePassword} from '../api/admin';
-    import {removeToken} from '../utils/auth';
-    import user_avatar from "../assets/img/img.jpg"
+
+    import {changeAdminAvatar, changePassword} from '../api/admin';
+    import {getOssToken} from '../api/oss';
+    import {getUserInfo, removeToken, setUserInfo} from '../utils/auth';
+    import {sha256Str} from '../utils/hash';
+    import {uploadFile} from '../utils/oss';
+    import {elMessageError, elMessageSuccess} from './api/message';
+    import {has_permission} from "../utils/permission";
+    import {confirmBox, confirmTipBox} from './api/message_box';
 
     export default defineComponent({
         setup() {
-            let username = localStorage.getItem("ms_username");
-            username = username ? username : "admin"
-            const changePasswordVisible = ref(false)
+            const visible = reactive({
+                change_password: false,
+                change_avatar: false
+            })
+            const user_info = getUserInfo()
             const form = reactive({
-                username: username,
-                password: ''
+                username: user_info.username,
+                password: '',
+                avatar: reactive({
+                    url: user_info.avatar.url,
+                    name: user_info.avatar.name,
+                }),
             });
-
+            const avatar = reactive({
+                name: '',
+                url: '',
+                raw: null
+            })
             const t = useI18n().t
             const store = useStore();
             const collapse = computed(() => store.state.collapse);
-            const changePasswordDisable = computed(() => form.password === '');
+            const disable = reactive({
+                change_password: computed(() => form.password === ''),
+            })
+            const permission = {
+                change_avatar: has_permission("30_7_1632291149973")
+            }
             // 侧边栏折叠
             const collapseChange = () => {
                 store.commit("handleCollapse", !collapse.value);
@@ -89,40 +132,94 @@
                     localStorage.removeItem('ms_username');
                     router.push('/login');
                 } else if (command === "change_password") {
-                    changePasswordVisible.value = true
+                    visible.change_password = true
                 }
             };
             const onchangePassword = () => {
                 changePassword(form.password).then(res => {
-                    ElMessageBox.confirm(t('i18n.password_change_success') + ':' + res.data.password, t('i18n.prompt'), {
-                        type: 'warning',
-                        beforeClose: (action, instance, done) => {
-                            done();
-                            removeToken();
-                            router.push('/login');
-                        }
-                    }).catch(() => {
-                    });
+                    confirmTipBox(t, function () {
+                        removeToken();
+                        router.push('/login');
+                    }, {
+                        message: t('i18n.password_change_success') + ':' + res.data.password
+                    })
                 });
             }
+            const onchangeAvatar = () => {
+                getOssToken().then((res) => {
+                    const observer = uploadFile(res.data.token, avatar.name, avatar.raw as unknown as File);
+                    observer.subscribe({
+                        next(res) {
+                        },
+                        error(err) {
+                            elMessageError(err)
+                        },
+                        complete(res) {
+                            changeAdminAvatar(avatar).then(() => {
+                                elMessageSuccess(t)
+                                form.avatar.name = avatar.name
+                                visible.change_avatar = false
+                                form.avatar.url = avatar.url
+                                user_info.avatar.name = avatar.name
+                                user_info.avatar.url = avatar.url
+                                setUserInfo(user_info)
 
+                            }).catch(() => {
+                            })
+                        }
+                    })
+
+                }).catch(() => {
+                })
+            }
+
+
+            const clickAvatar = () => {
+                avatar.name = form.avatar.name
+                avatar.url = form.avatar.url
+                visible.change_avatar = true
+            }
+
+            const clickChangeAvatar = (file: any, fileList: any) => {
+                const reader = new FileReader()
+                reader.readAsArrayBuffer(file.raw)
+                reader.onload = function (e) {
+                    if (e.target && e.target.result) {
+                        const key = sha256Str(e.target.result as ArrayBuffer) + ".jpeg"
+                        if (key !== avatar.name) {
+                            avatar.url = URL.createObjectURL(file.raw)
+                            avatar.raw = file.raw
+                            avatar.name = key
+                        } else {
+                            visible.change_avatar = false
+                        }
+
+                    }
+                }
+            }
             return {
                 t,
-                collapse,
-                user_avatar,
-                username,
-                changePasswordVisible,
-                changePasswordDisable,
-                form,
 
+                collapse,
+                visible,
+                disable,
+                form,
+                permission,
+                avatar,
+
+                clickAvatar,
                 handleCommand,
                 collapseChange,
                 onchangePassword,
+                onchangeAvatar,
+                clickChangeAvatar
             }
         },
     });
 </script>
 <style scoped lang="sass">
+
+
     .header-contain
         position: relative
         box-sizing: border-box
@@ -177,5 +274,19 @@
 
         .el-dropdown-menu__item
             text-align: center
+
+        .avatar-uploader
+            cursor: pointer
+            text-align: center
+
+
+            .avatar-uploader:hover
+                border-color: #409eff
+
+
+            .avatar
+                width: 178px
+                height: 178px
+                border-radius: 50%
 
 </style>

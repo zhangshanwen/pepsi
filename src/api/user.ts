@@ -31,3 +31,9 @@ export function deleteUser(form: { id: number }) {
 export function resetUserPassword(form: { id: number }) {
     return request.get(`/v1/users/password/reset/${form.id}`)
 }
+
+export function adjustUserBalance(form: { id: number, amount: number }) {
+    return request.patch(`/v1/users/balance/adjust/${form.id}`, {
+        amount: form.amount * 100
+    })
+}

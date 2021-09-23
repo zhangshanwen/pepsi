@@ -22,6 +22,11 @@
                                  property="username"
                                  align="center">
                 </el-table-column>
+                <el-table-column :label="t('field.balance')"
+                                 property="balance"
+                                 :formatter="formatterBalance"
+                                 align="center">
+                </el-table-column>
                 <el-table-column :label="t('field.last_login_time')"
                                  property="last_login_time"
                                  :formatter="formatterTime"
@@ -37,6 +42,16 @@
                                  :formatter="formatterTime"
                                  align="center">
                 </el-table-column>
+
+                <el-table-column :label="t('i18n.balance')"
+                                 align="center" v-if="permission.balance_adjust">
+                    <template #default="scope">
+                        <el-button type="text" v-if="permission.balance_adjust"
+                                   @click="clickBalanceAdjust(scope.row)">{{t('i18n.adjust')}}
+                        </el-button>
+                    </template>
+                </el-table-column>
+
                 <el-table-column :label="t('i18n.password')"
                                  align="center" v-if="permission.rest_password">
                     <template #default="scope">
@@ -76,19 +91,19 @@
             </el-row>
         </div>
         <el-dialog
-                :title="form.is_edit? t('i18n.edit'):t('i18n.new')"
+                :title="visible.is_edit? t('i18n.edit'):t('i18n.new')"
                 v-model="visible.save"
                 width="30%"
                 center>
             <el-form label-width="80px"
                      :model="form" :rules="rules">
-                <el-form-item :label="t('field.id')" v-if="form.is_edit">
+                <el-form-item :label="t('field.id')" v-if="visible.is_edit">
                     <el-input disabled v-model="form.id"></el-input>
                 </el-form-item>
                 <el-form-item :label="t('field.username')" prop="username">
                     <el-input v-model="form.username"></el-input>
                 </el-form-item>
-                <el-form-item v-if="!form.is_edit" :label="t('field.password')" prop="password">
+                <el-form-item v-if="!visible.is_edit" :label="t('field.password')" prop="password">
                     <el-input v-model="form.password"></el-input>
                 </el-form-item>
 
@@ -96,10 +111,31 @@
             <template #footer>
 
                 <el-button round @click="visible.save = false">{{t('i18n.cancel')}}</el-button>
-                <el-button round v-if="form.is_edit" type="primary" :disabled="disable.is_edit" @click="editData()">
+                <el-button round v-if="visible.is_edit" type="primary" :disabled="disable.is_edit" @click="editData()">
                     {{t('i18n.confirm')}}
                 </el-button>
                 <el-button round v-else type="primary" :disabled="disable.is_new" @click="newData()">
+                    {{t('i18n.confirm')}}
+                </el-button>
+            </template>
+        </el-dialog>
+        <el-dialog
+                :title="t('i18n.balance_adjust')"
+                status-icon
+                v-model="visible.balance_adjust"
+                width="30%"
+                center>
+            <el-form label-width="80px"
+                     :model="form" :rules="balance_adjust_rules">
+                <el-form-item :label="t('i18n.amount')" prop="amount">
+                    <el-input-number :precision="2" v-model="form.amount"></el-input-number>
+                </el-form-item>
+
+            </el-form>
+            <template #footer>
+
+                <el-button round type="primary" @click="visible.balance_adjust = false">{{t('i18n.cancel')}}</el-button>
+                <el-button round type="primary" :disabled="disable.is_balance_adjust" @click="AdjustBalance()">
                     {{t('i18n.confirm')}}
                 </el-button>
             </template>
@@ -115,10 +151,12 @@
     import {ElMessageBox} from 'element-plus';
 
 
-    import {getUsers, createUser, editUser, deleteUser, resetUserPassword} from '../api/user';
+    import {getUsers, createUser, editUser, deleteUser, resetUserPassword, adjustUserBalance} from '../api/user';
     import tableApi from "../components/api/table"
     import {confirmBox, confirmTipBox} from "../components/api/message_box"
+    import {elMessageSuccess} from "../components/api/message"
     import {has_permission} from "../utils/permission";
+    import {loadavg} from "os";
 
     export default defineComponent({
         name: 'User',
@@ -127,16 +165,20 @@
                 save: false,
                 delete: false,
                 reset_password: false,
+                is_edit: false,
+                balance_adjust: false,
             })
             const form = reactive({
                 id: 0,
+                balance: 0,
+                amount: 0,
                 username: '',
                 password: '',
-                is_edit: false,
             })
             const disable = reactive({
                 is_new: computed(() => form.username === '' || form.password === ''),
                 is_edit: computed(() => form.username === ''),
+                is_balance_adjust: computed(() => (form.balance / 100 + form.amount) < 0),
             })
             const table_api = tableApi(getUsers, createUser, editUser, deleteUser, visible, form)
 
@@ -145,26 +187,54 @@
                 username: [{required: true, message: table_api.t('i18n.pls_input_username'), trigger: 'blur'}],
                 password: [{required: true, message: table_api.t('i18n.pls_input_password'), trigger: 'blur'}]
             }
+            const balance_adjust_rules = {
+                amount: [
+                    {
+                        validator: function (rule: any, value: any, callback: any) {
+                            if ((form.balance / 100 + form.amount) < 0) {
+                                callback(new Error(table_api.t('i18n.balance_less')))
+                            }
+                        }, trigger: ['blur', 'change']
+                    }],
+            }
 
             const permission = {
                 add: has_permission("29_1_1631589517500"),
                 edit: has_permission("29_2_1631589543207"),
                 delete: has_permission("29_3_1631589558934"),
                 rest_password: has_permission("29_4_1631589569386"),
+                balance_adjust: has_permission("29_5_1631954785974")
+
+            }
+            const clickBalanceAdjust = (row: { id: number; balance: number }) => {
+                form.id = row.id
+                form.balance = row.balance
+                form.amount = 0
+
+                visible.balance_adjust = true;
+            }
+            const AdjustBalance = () => {
+                adjustUserBalance(form).then((res: any) => {
+                        visible.balance_adjust = false;
+                        elMessageSuccess(table_api.t)
+                        table_api.loadData()
+                    }
+                ).catch(() => {
+                });
             }
 
             const clickNewData = () => {
                 form.username = ''
                 form.password = ''
-                form.is_edit = false;
 
+                visible.is_edit = false;
                 visible.save = true;
             }
             const clickEditData = (row: { id: number; username: string; }) => {
                 form.id = row.id
                 form.username = row.username
-                form.is_edit = true;
 
+                visible.is_edit = true;
                 visible.save = true;
             }
 
@@ -184,21 +254,28 @@
                     message: table_api.t('i18n.reset_password')
                 })
             }
+            const formatterBalance = (row: any, column: any, cellValue: number, index: any) => {
+                return cellValue / 100
+            }
 
             return {
                 ...table_api,
 
                 form,
                 rules,
+                balance_adjust_rules,
 
                 permission,
                 visible,
                 disable,
 
+                formatterBalance,
+                clickBalanceAdjust,
                 clickNewData,
                 clickEditData,
                 clickResetPassword,
                 resetPassword,
+                AdjustBalance
             }
         }
     });

@@ -33,7 +33,7 @@
 
     import {login} from '../api/login';
     import key2Path from '../api/route';
-    import {setToken} from '../utils/auth';
+    import {setToken, setUserInfo} from '../utils/auth';
     import {savePermissionMenus, setPermissions} from '../utils/permission';
 
     export default {
@@ -72,7 +72,10 @@
                 if (login_ref.value) {
                     login(param)
                         .then((res) => {
-                            localStorage.setItem('ms_username', res.data.username);
+                            setUserInfo({
+                                username: res.data.username,
+                                avatar: res.data.avatar,
+                            })
                             setToken(res.data.authorization);
                             menus = [];
                             setPath(res.data.list, menus);
