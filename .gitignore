@@ -8,4 +8,4 @@ dist-ssr
 nginx.conf
 .env.production
 .env.development
-defalut.conf
+default.conf
