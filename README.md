@@ -15,7 +15,7 @@ node node_modules/esbuild/install.js
 
 ### 后台管理系统
 
-- []https://github.com/zhangshanwen/shard](后端api(golang)
+- [https://github.com/zhangshanwen/shard](后端api(golang)
 
 - 规范
     - 1.命名 
