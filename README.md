@@ -15,6 +15,8 @@ node node_modules/esbuild/install.js
 
 ### 后台管理系统
 
+- [后端api(golang)]https://github.com/zhangshanwen/shard
+
 - 规范
     - 1.命名 
         - 变量以及i18n key 采用蛇形命名)(下划线分隔 例如:post_user)
