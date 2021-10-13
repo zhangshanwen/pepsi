@@ -78,10 +78,15 @@ npm run build
         - 权限采用唯一key 标识, 统一通过has_permission 方法获取是否有权限
 
 - 项目截图
+  登录界面
  ![image](https://user-images.githubusercontent.com/36833420/137087169-31816ccf-d091-4584-9587-5f594643bdca.png)
+  角色管理
  ![image](https://user-images.githubusercontent.com/36833420/137087252-339e6600-4f19-4bb5-8768-5cbf3898d7f2.png)
+  管理员管理
  ![image](https://user-images.githubusercontent.com/36833420/137087324-fbaadb1a-4d97-425d-aaf5-0378ef9b7f46.png)
+  变更权限
  ![image](https://user-images.githubusercontent.com/36833420/137087386-c8feb63a-2569-41c3-b2fd-f4dfcec63a30.png)
+  权限管理
  ![image](https://user-images.githubusercontent.com/36833420/137087439-e3c932ae-8991-4fbf-bca0-035e0593bbcc.png)
 
 
