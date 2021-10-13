@@ -89,10 +89,3 @@ npm run build
 - 权限管理
  ![image](https://user-images.githubusercontent.com/36833420/137087439-e3c932ae-8991-4fbf-bca0-035e0593bbcc.png)
 
-
-
-
-
-
-│   │   │   ├── Bread.vuej截图
-│   │   │   ├── Bread.vue
