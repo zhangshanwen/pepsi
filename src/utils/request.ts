@@ -15,7 +15,7 @@ const baseURL = import.meta.env.MODE === 'development'
 
 const request = axios.create({
     baseURL: baseURL,
-    timeout: 1000 * 10
+    timeout: 1000 * 5
 });
 
 
@@ -44,18 +44,22 @@ request.interceptors.response.use(
         }
     },
     async (error) => {
+        if (!error.response) {
+            ElMessage.error( i18n.global.t('i18n.request_timeout'))
+            return
+        }
         if (error.response.status === 401 && window.location.hash !== '#/login') {
             localStorage.removeItem('ms_username');
             removeToken();
             i18n.global.t('i18n.authentication_failure_pls_log_back_in')
             await router.push('/')
-            return Promise.reject(error);
+            return
         } else if (error.response.status === 403) {
             await router.push('/403')
-            return Promise.reject(error);
+            return
         } else if (error.response.status === 404) {
             ElMessage.error(i18n.global.t('i18n.the_system_is_busy_pls_try_again_later'))
-            return Promise.reject(error);
+            return
         }
         try {
             ElMessage.error(i18n.global.t(`code.${error.response.data.code}`))

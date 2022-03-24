@@ -12,4 +12,3 @@ export interface paginationType {
 export interface permissionType {
     [key: string]: any
 }
-

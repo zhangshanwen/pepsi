@@ -149,10 +149,10 @@
     import {ElMessageBox, ElMessage} from 'element-plus';
 
 
-    import {getPermissions, createPermission, editPermissions, delPermissions} from '../api/permission';
-    import {getRoutes} from '../api/route';
-    import elIcons from '../api/icon';
-    import {has_permission} from "../utils/permission";
+    import {getPermissions, createPermission, editPermissions, delPermissions} from '../../api/permission';
+    import {getRoutes} from '../../api/route';
+    import elIcons from '../../api/icon';
+    import {has_permission} from "../../utils/permission";
 
 
     export default {

@@ -12,12 +12,12 @@ const routes = [
     },
     {
         path: '/home',
-        component: () => import ( /* webpackChunkName: "dashboard" */ '../views/Home.vue'),
+        component: () => import ( /* webpackChunkName: "dashboard" */ '../views/home/index.vue'),
         meta: {title: 'home'},
         children: [
             {
                 path: '/user',
-                component: () => import ( /* webpackChunkName: "dashboard" */ '../views/User.vue'),
+                component: () => import ( /* webpackChunkName: "dashboard" */ '../views/user/index.vue'),
 
                 meta: {title: 'user'}
             },
@@ -29,33 +29,37 @@ const routes = [
 
             {
                 path: '/admin',
-                component: () => import ( /* webpackChunkName: "dashboard" */ '../views/Admin.vue'),
+                component: () => import ( /* webpackChunkName: "dashboard" */ '../views/admin/index.vue'),
 
                 meta: {title: 'admin'}
             },
             {
                 path: '/permission',
-                component: () => import ( /* webpackChunkName: "dashboard" */ '../views/Permission.vue'),
+                component: () => import ( /* webpackChunkName: "dashboard" */ '../views/permission/index.vue'),
 
                 meta: { title: 'permission' }
             },
             {
                 path: '/route',
-                component: () => import ( /* webpackChunkName: "dashboard" */ '../views/Route.vue'),
+                component: () => import ( /* webpackChunkName: "dashboard" */ '../views/route/index.vue'),
 
                 meta: { title: 'route' }
             },
             {
                 path: '/role',
-                component: () => import ( /* webpackChunkName: "dashboard" */ '../views/Role.vue'),
-
+                component: () => import ( /* webpackChunkName: "dashboard" */ '../views/role/index.vue'),
                 meta: { title: 'role' }
+            },
+            {
+                path: '/file',
+                component: () => import ( /* webpackChunkName: "dashboard" */ '../views/file/index.vue'),
+                meta: { title: 'file' }
             }
         ]
     },
     {
         path: '/login',
-        component: () => import ( /* webpackChunkName: "dashboard" */ '../views/Login.vue'),
+        component: () => import ( /* webpackChunkName: "dashboard" */ '../views/login/index.vue'),
         meta: {title: 'login'}
     },
     {

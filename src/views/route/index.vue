@@ -39,8 +39,8 @@
 </template>
 
 <script>
-    import {getRoutes} from '../api/route';
-    import allTableApi from '../components/api/all_table'
+    import {getRoutes} from '../../api/route';
+    import allTableApi from '../../components/api/all_table'
 
     export default {
         name: 'Route',

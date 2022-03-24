@@ -26,6 +26,7 @@ const zh = {
         route: '路由',
         balance: '余额',
         avatar: '头像',
+        file_type: '文件类型'
     },
     title: {
         '403': '403',
@@ -37,6 +38,7 @@ const zh = {
         route: '路由管理',
         role: '角色管理',
         role_permission: '角色权限管理',
+        file: '文件管理',
     },
     i18n: {
         login: '登录',
@@ -83,6 +85,7 @@ const zh = {
         balance_less: '余额不足',
         pls_input_username_mobile: '请输入用户名/手机号',
         pls_input_name: '请输入名称',
+        pls_input_code: '请输入代码',
         pls_input_permission_name: '请输入权限名称',
         pls_choose_date: '请选择日期',
         pls_choose: '请选择',
@@ -100,6 +103,7 @@ const zh = {
         closeAll: '关闭所有',
         the_system_is_busy_pls_try_again_later: '系统繁忙请稍后再试',
         authentication_failure_pls_log_back_in: '认证失败,请重新登录',
+        request_timeout: '请求超时',
         success: '成功',
         permission: '权限',
         edit_permission: '修改权限',
@@ -108,6 +112,10 @@ const zh = {
         confirm_save_permission: '确定保存权限?',
         confirm_delete_btn_permission: '确定删除此按钮权限?',
         confirm_delete_page_permission: '确定删除此页面权限?',
+        run: '运行',
+        open: '打开',
+        pls_select: '请选择',
+        pls_select_file_type: '请选择文件类型',
     },
     code: {
         '200002': '参数错误',

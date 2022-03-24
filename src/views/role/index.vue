@@ -113,13 +113,13 @@
 
     import {reactive, ref, provide, computed} from "vue";
 
-    import RolePermission from "../components/RolePermission.vue";
+    import RolePermission from "../../components/RolePermission.vue";
 
 
-    import tableApi from "../components/api/table";
-    import {getRolePermissions} from "../api/rolePermission";
-    import {getRoles, createRole, editRole, deleteRole} from "../api/role";
-    import {has_permission} from "../utils/permission";
+    import tableApi from "../../components/api/table";
+    import {getRolePermissions} from "../../api/rolePermission";
+    import {getRoles, createRole, editRole, deleteRole} from "../../api/role";
+    import {has_permission} from "../../utils/permission";
 
 
     export default {

@@ -9,3 +9,4 @@ nginx.conf
 .env.production
 .env.development
 default.conf
+package-lock.json

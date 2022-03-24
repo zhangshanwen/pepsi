@@ -151,11 +151,11 @@
     import {ElMessageBox} from 'element-plus';
 
 
-    import {getUsers, createUser, editUser, deleteUser, resetUserPassword, adjustUserBalance} from '../api/user';
-    import tableApi from "../components/api/table"
-    import {confirmBox, confirmTipBox} from "../components/api/message_box"
-    import {elMessageSuccess} from "../components/api/message"
-    import {has_permission} from "../utils/permission";
+    import {getUsers, createUser, editUser, deleteUser, resetUserPassword, adjustUserBalance} from '../../api/user';
+    import tableApi from "../../components/api/table"
+    import {confirmBox, confirmTipBox} from "../../components/api/message_box"
+    import {elMessageSuccess} from "../../components/api/message"
+    import {has_permission} from "../../utils/permission";
     import {loadavg} from "os";
 
     export default defineComponent({

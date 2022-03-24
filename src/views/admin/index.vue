@@ -157,14 +157,14 @@
 <script lang="ts">
     import {reactive, ref, computed, onMounted, onUnmounted, nextTick} from "vue";
 
-    import RolePermission from "../components/RolePermission.vue";
+    import RolePermission from "../../components/RolePermission.vue";
 
-    import tableApi from "../components/api/table";
-    import {createAdmin, deleteAdmin, editAdmin, getAdmins, changeRole, resetAdminPassword} from "../api/admin";
-    import {getRolePermissions} from "../api/rolePermission";
-    import {getRoles} from "../api/role";
-    import {has_permission} from "../utils/permission";
-    import {confirmBox, confirmTipBox} from "../components/api/message_box";
+    import tableApi from "../../components/api/table";
+    import {createAdmin, deleteAdmin, editAdmin, getAdmins, changeRole, resetAdminPassword} from "../../api/admin";
+    import {getRolePermissions} from "../../api/rolePermission";
+    import {getRoles} from "../../api/role";
+    import {has_permission} from "../../utils/permission";
+    import {confirmBox, confirmTipBox} from "../../components/api/message_box";
 
     export default {
         name: "Admin",
