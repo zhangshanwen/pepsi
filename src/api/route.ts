@@ -1,7 +1,7 @@
 import request from '../utils/request'
 
 export function getRoutes() {
-    return request.get(`/v1/routes`)
+    return request.get(`/backend/v1/routes`)
 }
 
 
