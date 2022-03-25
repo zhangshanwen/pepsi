@@ -16,7 +16,7 @@
           </el-input>
         </el-form-item>
         <el-form-item class="login-btn">
-          <el-button round type="primary" @click="submitForm(login_ref)" :loading="loading">
+          <el-button round type="primary" @click="submitForm" :loading="loading">
             {{ t('i18n.login') }}
           </el-button>
         </el-form-item>
@@ -26,7 +26,7 @@
 </template>
 
 <script lang="ts">
-import {ref, reactive} from 'vue';
+import {ref, reactive, onMounted} from 'vue';
 import {useStore} from 'vuex'
 import {useRouter} from 'vue-router';
 import {useI18n} from 'vue-i18n';
@@ -70,9 +70,8 @@ export default {
     };
     let keys_permission: any[] = [];
     let menus: any[] = [];
-    const submitForm = (formEl: FormInstance | undefined) => {
-      if (!formEl) return
-      formEl.validate((valid: boolean) => {
+    const submitForm = () => {
+      login_ref.value.validate((valid: boolean) => {
         if (valid) {
           loading.value = true
           login(param)
@@ -117,6 +116,13 @@ export default {
         setPath(child.children, item.children);
       });
     };
+    onMounted(() => {
+      window.addEventListener("keyup", (e) => {
+        if (e.key === "Enter") {
+          submitForm()
+        }
+      })
+    })
     return {
       t,
 
