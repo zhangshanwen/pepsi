@@ -67,7 +67,7 @@
           :options="cmOptions"
           border
           :height="400"
-          ref="code_ref"
+          ref="log_ref"
       />
 
     </el-dialog>
@@ -101,6 +101,7 @@ export default {
   setup() {
     const save_ref = ref<FormInstance>()
     const code_ref = ref<CodeMirrorInstance>()
+    const log_ref = ref<CodeMirrorInstance>()
     const table_api = allTableApi(getFiles)
 
     const form = reactive({
@@ -205,6 +206,9 @@ export default {
         visible.log = true
         form.log = res.data
         form.name = name
+        nextTick(() => {
+          log_ref.value.refresh()
+        })
       }).catch(err => {
         ElMessage.error(err.message)
       })
