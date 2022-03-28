@@ -1,7 +1,12 @@
 <template>
   <div class="login-contain">
     <div class="login-form">
-      <div class="login-title">{{ t('i18n.backend_system') }}</div>
+      <div class="login-title">
+        <div class="title">
+          <span>{{ t('i18n.backend_system') }}</span>
+        </div>
+      </div>
+
       <el-form @submit.native.prevent :model="param" :rules="rules" ref="login_ref" label-width="0px"
                class="ms-content">
         <el-form-item prop="username">
@@ -144,7 +149,6 @@ export default {
 
 <style scoped lang="sass">
 
-
 .login-contain
   position: relative
   width: 100%
@@ -153,16 +157,48 @@ export default {
     image: url(../../assets/img/login-bg.jpg)
     size: 100%
 
-
   .login-title
     width: 100%
+    height: 100px
     line-height: 50px
-    text-align: center
+    display: flex
+    justify-content: center
+    align-items: center
     font:
       size: 20px
     color: #fff
     border:
       bottom: 1px solid #ddd
+    .title
+      height: 50px
+      width: 150px
+      border-radius: 10px
+      justify-content: center
+      align-items: center
+      text-align: center
+      background-image: linear-gradient(45deg, gold, deeppink)
+      animation: hue 3s infinite linear
+
+      &::before,
+      &::after
+        content: ""
+        position: absolute
+        top: -15px
+        bottom: -15px
+        left: -15px
+        right: -15px
+        border: 5px solid #24acf2
+        border-image: linear-gradient(45deg, gold, deeppink) 1
+        clip-path: inset(0px round 10px)
+        animation: clippath 3s infinite linear
+
+      &::after
+        animation: clippath 3s infinite -1.5s linear
+
+      span
+        color: white
+        font-size: 20px
+
 
 
   .login-form
@@ -199,5 +235,29 @@ export default {
   background-color: aqua
   box-shadow: 0 0 5px aqua, 0 0 75px aqua, 0 0 155px aqua
   color: black
+
+
+@keyframes hue
+  0%
+    filter: hue-rotate(0deg)
+
+  100%
+    filter: hue-rotate(360deg)
+
+@keyframes clippath
+  0%
+    clip-path: inset(0 0 95% 0)
+    filter: hue-rotate(0deg)
+  25%
+    clip-path: inset(0 95% 0 0)
+
+  50%
+    clip-path: inset(95% 0 0 0)
+  75%
+    clip-path: inset(0 0 0 95%)
+  100%
+    clip-path: inset(0 0 95% 0)
+    filter: hue-rotate(360deg)
+
 
 </style>
