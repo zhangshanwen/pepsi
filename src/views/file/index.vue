@@ -1,7 +1,10 @@
 <template>
   <div>
     <div class="contain">
-      <el-button round type="success" class="btn" @click="clickNewCode">{{ t('i18n.new') }}</el-button>
+      <el-button round type="success" class="btn" v-if="permission.add" @click="clickNewCode">{{
+          t('i18n.new')
+        }}
+      </el-button>
       <el-row>
         <el-col
             v-for="(item, index) in table_data"
@@ -18,25 +21,55 @@
               <div class="bottom">
                 <span>{{ item.name }}</span>
                 <div class="button">
-                  <el-button type="text" @click="clickCatCode(item)">{{ t('i18n.open') }}</el-button>
-                  <el-button type="text" @click="runCode(item.id,item.name)">{{ t('i18n.run') }}</el-button>
+                  <el-button type="text" v-if="permission.info" @click="clickCatCode(item)">{{
+                      t('i18n.open')
+                    }}
+                  </el-button>
+                  <el-button type="text" v-if="permission.run" @click="runCode(item.id,item.name)">{{
+                      t('i18n.run')
+                    }}
+                  </el-button>
+                  <el-button type="text" v-if="permission.delete" @click="clickDeleteData(item.id)">{{
+                      t('i18n.delete')
+                    }}
+                  </el-button>
                 </div>
               </div>
             </div>
           </el-card>
         </el-col>
+        <el-col :span="24">
+          <div class="pagination">
+            <el-pagination
+                v-if='pagination.total > 0'
+                :page-sizes="pagination.page_size_array"
+                :page-size="pagination.page_size"
+                :layout="pagination.layout"
+                :total="pagination.total"
+                :current-page='pagination.page_index'
+                @current-change='handleCurrentChange'
+                @size-change='handleSizeChange'>
+            </el-pagination>
+          </div>
+        </el-col>
       </el-row>
     </div>
-    <el-dialog v-model="visible.code" :title="form.name" width="70%"
+    <el-dialog v-model="visible.save" :title="form.name" width="70%"
                center>
       <el-form label-position="left" label-width="100px" ref="save_ref" :model="form" :rules="rules">
-        <el-button v-if="!form.is_edit" class="btn" round @click="form.is_edit=!form.is_edit" type="warning">
+        <el-button v-if="!form.is_edit && (permission.add || permission.edit)" class="btn" round
+                   @click="form.is_edit=!form.is_edit" type="warning">
           {{ t('i18n.edit') }}
         </el-button>
-        <el-button class="btn" round v-else @click="saveData(save_ref)" type="error" :loading=" form.loading">
+        <el-button class="btn" round v-else-if="form.id===0 || permission.run " @click="fileCreate()" type="error"
+                   :loading=" pagination.loading">
           {{ t('i18n.save') }}
         </el-button>
-        <el-form-item :label="t('field.name')" v-if="form.is_edit" prop="name">
+        <el-button class="btn" round v-else @click="fileUpdate()" type="error"
+                   :loading=" pagination.loading">
+          {{ t('i18n.save') }}
+        </el-button>
+        <el-form-item :label="t('field.name')" v-if="form.is_edit || permission.edit " prop="name">
           <el-input v-model="form.name"/>
         </el-form-item>
         <el-form-item :label="t('field.file_type')" prop="file_type">
@@ -77,13 +110,11 @@
 </template>
 
 <script lang="ts">
-import {getFiles, getFile, updateFile, uploadFile, runFile} from '../../api/file';
+import {getFiles, getFile, updateFile, uploadFile, runFile, deleteFile} from '../../api/file';
 import pythonPng from '../../assets/img/python.png'
 import shellPng from '../../assets/img/shell.png'
-import allTableApi from '../../components/api/all_table'
-import key2Path from "../../api/route";
+import Table from '../../components/api/table'
 import {nextTick, reactive, ref, computed} from "vue";
-import type {FormInstance} from 'element-plus'
 import type {CodeMirrorInstance} from 'codemirror-editor-vue3'
 import {ElMessage} from "element-plus";
 import Codemirror from "codemirror-editor-vue3";
@@ -92,6 +123,7 @@ import "codemirror/mode/python/python.js";
 import "codemirror/mode/shell/shell.js";
 import "codemirror/mode/go/go.js";
 import "codemirror/theme/dracula.css";
+import {has_permission} from "../../utils/permission";
 
 
 export default {
@@ -99,25 +131,26 @@ export default {
   components: {Codemirror},
 
   setup() {
-    const save_ref = ref<FormInstance>()
     const code_ref = ref<CodeMirrorInstance>()
     const log_ref = ref<CodeMirrorInstance>()
-    const table_api = allTableApi(getFiles)
 
     const form = reactive({
       id: 0,
       name: '',
       code: '',
+      file: '',
       mode: '',
       log: '',
       file_type: 0,
       is_edit: false,
-      loading: false,
     })
     const visible = reactive({
-      code: false,
+      save: false,
+      delete: false,
       log: false,
     })
+    const table_api = Table(getFiles, uploadFile, updateFile, deleteFile, visible, form)
+
 
     const rules = {
       name: [
@@ -142,6 +175,14 @@ export default {
         }
       ]
     }
+    const permission = {
+      add: has_permission("51_1_1648434568048"),
+      edit: has_permission("51_2_1648434600816"),
+      delete: has_permission("51_3_1648434667207"),
+      info: has_permission("51_5_1648439101813"),
+      run: has_permission("51_4_1648434681188"),
+    }
+
     const file_type_options = [
       {value: 0, label: 'shell'},
       {value: 1, label: 'python'},
@@ -182,27 +223,17 @@ export default {
           }
         }
     )
-    const saveData = (formEl: FormInstance | undefined) => {
-      if (!formEl) return
-      formEl.validate((valid: boolean) => {
-        if (valid) {
-          form.loading = true
-          const code = btoa(form.code)
-          const req = form.id === 0 ? uploadFile(code, form.name, Number(form.file_type)) :
-              updateFile(form.id, code, form.name, Number(form.file_type))
-          req.then(res => {
-            table_api.loadData()
-          }).catch(err => {
-            ElMessage.error(err.message)
-          }).finally(() => {
-            form.loading = false
-            visible.code = false
-          })
-        }
-      })
-    }
+    const fileCreate = (() => {
+      form.file = btoa(form.code)
+      table_api.newData()
+    })
+    const fileUpdate = (() => {
+      form.file = btoa(form.code)
+      table_api.editData()
+    })
+
     const runCode = (id: number, name: string) => {
-      runFile(id).then(res => {
+      runFile({id: id}).then(res => {
         visible.log = true
         form.log = res.data
         form.name = name
@@ -221,7 +252,7 @@ export default {
         form.file_type = item.file_type
         form.code = atob(res.data.code);
         form.is_edit = false
-        visible.code = true
+        visible.save = true
         nextTick(() => {
           code_ref.value.refresh()
         })
@@ -235,7 +266,7 @@ export default {
       form.name = '';
       form.code = '# input your code';
       form.is_edit = true
-      visible.code = true;
+      visible.save = true;
       nextTick(() => {
         code_ref.value.refresh()
       })
@@ -248,21 +279,23 @@ export default {
       return shellPng
     };
     return {
+      ...table_api,
       visible,
       form,
       rules,
-      save_ref,
       code_ref,
+      log_ref,
       file_type_options,
       cmOptions,
       logOptions,
+      permission,
 
-      saveData,
+      fileCreate,
+      fileUpdate,
       runCode,
       getImag,
       clickCatCode,
       clickNewCode,
-      ...table_api,
 
 
     }

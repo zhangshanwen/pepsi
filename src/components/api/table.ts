@@ -2,26 +2,28 @@ import {reactive, ref, onMounted} from "vue";
 import {useI18n} from "vue-i18n";
 import formatterApi from "./formatter";
 import {confirmBox} from "./message_box";
+// @ts-ignore
+import type {FormInstance} from 'element-plus'
 
 import {ElMessage} from 'element-plus'
 
 const tableApi = (
-    fetchPageApi: {
-        (pagination: any): Promise<any>
-    },
-    createApi: { (form: any): Promise<any> },
-    editApi: { (form: any): Promise<any> },
-    deleteApi: { (form: any): Promise<any> },
-    visible: {
-        save: boolean,
-        delete: boolean,
-    },
-    form: {
-        id: number,
-    }
+        fetchPageApi: {
+            (pagination: any): Promise<any>
+        },
+        createApi: { (form: any): Promise<any> },
+        editApi: { (form: any): Promise<any> },
+        deleteApi: { (form: any): Promise<any> },
+        visible: {
+            save: boolean,
+            delete: boolean,
+        },
+        form: {
+            id: number,
+        }
     ) => {
         const t = useI18n().t
-
+        const save_ref = ref<FormInstance>()
         const pagination = reactive({
             total: 0,
             page_index: 1,
@@ -46,11 +48,16 @@ const tableApi = (
             });
         }
         const newData = async () => {
-            createApi(form).then((res: any) => {
-                ElMessage.success(t('i18n.success'))
-                visible.save = false;
-                loadData();
-            }).catch();
+            save_ref.value.validate((valid: boolean) => {
+                    if (valid) {
+                        createApi(form).then((res: any) => {
+                            ElMessage.success(t('i18n.success'))
+                            visible.save = false;
+                            loadData();
+                        }).catch();
+                    }
+                }
+            )
         }
         const editData = async () => {
             editApi(form).then((res: any) => {
@@ -91,6 +98,7 @@ const tableApi = (
             ...formatterApi(),
 
             t,
+            save_ref,
             table_data,
             pagination,
 
