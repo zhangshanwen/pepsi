@@ -45,21 +45,21 @@ request.interceptors.response.use(
     },
     async (error) => {
         if (!error.response) {
-            ElMessage.error( i18n.global.t('i18n.request_timeout'))
-            return
+            ElMessage.error(i18n.global.t('i18n.request_timeout'))
+            return Promise.reject(error)
         }
         if (error.response.status === 401 && window.location.hash !== '#/login') {
             localStorage.removeItem('ms_username');
             removeToken();
             i18n.global.t('i18n.authentication_failure_pls_log_back_in')
             await router.push('/')
-            return
+            return Promise.reject(error)
         } else if (error.response.status === 403) {
             await router.push('/403')
-            return
+            return Promise.reject(error)
         } else if (error.response.status === 404) {
             ElMessage.error(i18n.global.t('i18n.the_system_is_busy_pls_try_again_later'))
-            return
+            return Promise.reject(error)
         }
         try {
             ElMessage.error(i18n.global.t(`code.${error.response.data.code}`))

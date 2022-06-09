@@ -26,7 +26,12 @@ const zh = {
         route: '路由',
         balance: '余额',
         avatar: '头像',
-        file_type: '文件类型'
+        file_type: '文件类型',
+        host: '主机',
+        connect_type: '连接类型',
+        port: '端口',
+        status: '状态',
+        comment: '备注'
     },
     title: {
         '403': '403',
@@ -39,6 +44,7 @@ const zh = {
         role: '角色管理',
         role_permission: '角色权限管理',
         file: '文件管理',
+        host: '主机管理',
     },
     i18n: {
         login: '登录',
@@ -51,6 +57,7 @@ const zh = {
         new: '新增',
         add: '添加',
         edit: '编辑',
+        connect: '连接',
         adjust: '调整',
         change: '变更',
         operate: '操作',
@@ -87,6 +94,7 @@ const zh = {
         pls_input_name: '请输入名称',
         pls_input_code: '请输入代码',
         pls_input_permission_name: '请输入权限名称',
+        pls_input_permission_host: '请输入权限主机地址',
         pls_choose_date: '请选择日期',
         pls_choose: '请选择',
         pls_input_mobile: '请输入手机号',
@@ -105,6 +113,7 @@ const zh = {
         authentication_failure_pls_log_back_in: '认证失败,请重新登录',
         request_timeout: '请求超时',
         success: '成功',
+        failed: '失败',
         permission: '权限',
         edit_permission: '修改权限',
         add_permission: '添加权限',
@@ -116,6 +125,7 @@ const zh = {
         open: '打开',
         pls_select: '请选择',
         pls_select_file_type: '请选择文件类型',
+        pls_select_connect_type: '请选择连接类型',
     },
     code: {
         '200002': '参数错误',

@@ -9,7 +9,10 @@ import messages from '../utils/i18n';
 const i18n = createI18n({
     locale: localeZH.name,
     fallbackLocale: localeEN.name,
-    messages
+    messages,
+    silentTranslationWarn: true,
+    silentFallbackWarn: true,
+
 });
 
 export default i18n;

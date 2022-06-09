@@ -57,28 +57,31 @@
     <el-dialog v-model="visible.save" :title="form.name" width="70%"
                center>
       <el-form label-position="left" label-width="100px" ref="save_ref" :model="form" :rules="rules">
-        <el-button v-if="!form.is_edit && (permission.add || permission.edit)" class="btn" round
+        <el-button v-if="!form.is_edit && (permission.add && permission.edit)" class="btn" round
                    @click="form.is_edit=!form.is_edit" type="warning">
           {{ t('i18n.edit') }}
         </el-button>
-        <el-button class="btn" round v-else-if="form.id===0 || permission.run " @click="fileCreate()" type="error"
+        <el-button class="btn" round v-else-if="form.id===0 && permission.run " @click="fileCreate()" type="danger"
                    :loading=" pagination.loading">
           {{ t('i18n.save') }}
         </el-button>
-        <el-button class="btn" round v-else @click="fileUpdate()" type="error"
+        <el-button class="btn" round v-else @click="fileUpdate()" type="danger"
                    :loading=" pagination.loading">
           {{ t('i18n.save') }}
         </el-button>
-        <el-form-item :label="t('field.name')" v-if="form.is_edit || permission.edit " prop="name">
+        <el-form-item :label="t('field.name')" v-if="form.is_edit && permission.edit " prop="name">
           <el-input v-model="form.name"/>
         </el-form-item>
         <el-form-item :label="t('field.file_type')" prop="file_type">
-          <el-select-v2
-              :disabled="!form.is_edit"
-              v-model="form.file_type"
-              :options="file_type_options"
-              :placeholder="t('i18n.pls_select_file_type')"
-          />
+
+          <el-select v-model="form.file_type" :placeholder="t('i18n.pls_select_file_type')">
+            <el-option
+                v-for="item in file_type_options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item>
           <Codemirror
@@ -141,7 +144,7 @@ export default {
       file: '',
       mode: '',
       log: '',
-      file_type: 0,
+      file_type: '0',
       is_edit: false,
     })
     const visible = reactive({
@@ -184,11 +187,11 @@ export default {
     }
 
     const file_type_options = [
-      {value: 0, label: 'shell'},
-      {value: 1, label: 'python'},
+      {value: '0', label: 'shell'},
+      {value: '1', label: 'python'},
     ]
-    const getMode = (p: { file_type: number }) => {
-      if (p.file_type === 1) {
+    const getMode = (p: { file_type: string }) => {
+      if (p.file_type === '1') {
         return 'python'
       }
       return 'shell'
@@ -249,7 +252,7 @@ export default {
       getFile(item.id).then((res) => {
         form.id = item.id
         form.name = item.name
-        form.file_type = item.file_type
+        form.file_type = item.file_type.toString()
         form.code = atob(res.data.code);
         form.is_edit = false
         visible.save = true
@@ -341,6 +344,8 @@ export default {
 
 .log
   width: 50%
+
+
 </style>
 
 

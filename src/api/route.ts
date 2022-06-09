@@ -16,6 +16,7 @@ let key2Path: key2PathInterface = {
     '28_2_1631260069872': '/admin',
     '28_3_1631260121599': '/role',
     '50_1_1646919662672': '/file',
+    '50_2_1654153710016': '/host',
 }
 
 export default key2Path

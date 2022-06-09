@@ -37,23 +37,28 @@ const routes = [
                 path: '/permission',
                 component: () => import ( /* webpackChunkName: "dashboard" */ '../views/permission/index.vue'),
 
-                meta: { title: 'permission' }
+                meta: {title: 'permission'}
             },
             {
                 path: '/route',
                 component: () => import ( /* webpackChunkName: "dashboard" */ '../views/route/index.vue'),
 
-                meta: { title: 'route' }
+                meta: {title: 'route'}
             },
             {
                 path: '/role',
                 component: () => import ( /* webpackChunkName: "dashboard" */ '../views/role/index.vue'),
-                meta: { title: 'role' }
+                meta: {title: 'role'}
             },
             {
                 path: '/file',
                 component: () => import ( /* webpackChunkName: "dashboard" */ '../views/file/index.vue'),
-                meta: { title: 'file' }
+                meta: {title: 'file'}
+            },
+            {
+                path: '/host',
+                component: () => import ( /* webpackChunkName: "dashboard" */ '../views/host/index.vue'),
+                meta: {title: 'host'}
             }
         ]
     },

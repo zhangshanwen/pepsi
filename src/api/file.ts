@@ -18,18 +18,18 @@ export function runFile(form: { id: number }) {
     })
 }
 
-export function uploadFile(form: { file: string, name: string, file_type: number }) {
+export function uploadFile(form: { file: string, name: string, file_type: string }) {
     return request.post(`/backend/v1/file`, {
         file: form.file,
         file_name: form.name,
-        file_type: form.file_type,
+        file_type: Number(form.file_type),
     })
 }
 
-export function updateFile(form: { id: number, file: string, name: string, file_type: number }) {
+export function updateFile(form: { id: number, file: string, name: string, file_type: string }) {
     return request.put(`/backend/v1/file/${form.id}`, {
         file: form.file,
         file_name: form.name,
-        file_type: form.file_type,
+        file_type: Number(form.file_type),
     })
 }
