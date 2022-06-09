@@ -7,9 +7,10 @@ import installElement from './plugins/element';
 
 
 const app = createApp(App);
-
+// @ts-ignore
 installElement(app);
 
+// @ts-ignore
 app
     .use(store)
     .use(i18n)

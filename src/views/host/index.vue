@@ -158,7 +158,6 @@ import {confirmBox, confirmTipBox} from "../../components/api/message_box"
 import {elMessageSuccess} from "../../components/api/message"
 import {has_permission} from "../../utils/permission";
 import {negate, omit, values} from "lodash";
-import os from "os"
 
 export default defineComponent({
   name: 'Host',
@@ -231,7 +230,6 @@ export default defineComponent({
     }
     const clickConnect = (row: {}) => {
       visible.item = true
-      console.log(os)
     }
     const formatterConnectType = (row: any, column: any, cellValue: number, index: any) => {
       const i = connect_type_options.filter(x => x.value === cellValue)
