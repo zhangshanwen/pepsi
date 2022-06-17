@@ -85,22 +85,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <el-row>
-        <el-col :span="24">
-          <div class="pagination">
-            <el-pagination
-                v-if='pagination.total > 0'
-                :page-sizes="pagination.page_size_array"
-                :page-size="pagination.page_size"
-                :layout="pagination.layout"
-                :total="pagination.total"
-                :current-page='pagination.page_index'
-                @current-change='handleCurrentChange'
-                @size-change='handleSizeChange'>
-            </el-pagination>
-          </div>
-        </el-col>
-      </el-row>
+      <pagination v-bind:pagination="pagination" :load-data="loadData"/>
     </div>
     <el-dialog
         :title="form.is_edit? t('i18n.edit'):t('i18n.new')"
@@ -167,10 +152,11 @@ import {getRolePermissions} from "../../api/rolePermission";
 import {getRoles} from "../../api/role";
 import {has_permission} from "../../utils/permission";
 import {confirmBox, confirmTipBox} from "../../components/api/message_box";
+import Pagination from "../../components/Pagination.vue"
 
 export default {
   name: "Admin",
-  components: {RolePermission},
+  components: {RolePermission, Pagination},
   setup() {
 
     const visible = reactive({
@@ -198,7 +184,7 @@ export default {
     const role_permissions = ref([])
     const role_loading = ref(false)
 
-    const table_api = tableApi(getAdmins, createAdmin, editAdmin, deleteAdmin, visible, form)
+    const table_api = tableApi(getAdmins, createAdmin, editAdmin, deleteAdmin, visible, form, null)
     const rules = {
       username: [{required: true, message: table_api.t('i18n.pls_input_username'), trigger: 'blur'}],
       password: [{required: true, message: table_api.t('i18n.pls_input_password'), trigger: 'blur'}]

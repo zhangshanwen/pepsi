@@ -9,18 +9,19 @@ import {ElMessage} from 'element-plus'
 
 const tableApi = (
         fetchPageApi: {
-            (pagination: any): Promise<any>
+            (pagination: any, search: any | null): Promise<any>
         },
-        createApi: { (form: any): Promise<any> },
-        editApi: { (form: any): Promise<any> },
-        deleteApi: { (form: any): Promise<any> },
+        createApi: { (form: any): Promise<any> } | null,
+        editApi: { (form: any): Promise<any> } | null,
+        deleteApi: { (form: any): Promise<any> } | null,
         visible: {
             save: boolean,
             delete: boolean,
-        },
+        } | null,
         form: {
             id: number,
-        }
+        } | null,
+        search: object | null
     ) => {
         const t = useI18n().t
         const save_ref = ref<FormInstance>()
@@ -39,7 +40,7 @@ const tableApi = (
 
         const loadData = async () => {
             pagination.loading = true;
-            fetchPageApi(pagination).then((res: any) => {
+            fetchPageApi(pagination, search).then((res: any) => {
                 table_data.value = res.data.list;
                 pagination.total = res.data.pagination.total
             }).catch(() => {
@@ -48,34 +49,45 @@ const tableApi = (
             });
         }
         const newData = async () => {
+            // @ts-ignore
             save_ref.value.validate((valid: boolean) => {
                     if (valid) {
-                        createApi(form).then((res: any) => {
-                            ElMessage.success(t('i18n.success'))
-                            visible.save = false;
-                            loadData();
-                        }).catch();
+                        if (createApi) {
+                            createApi(form).then((res: any) => {
+                                ElMessage.success(t('i18n.success'))
+                                // @ts-ignore
+                                visible.save = false;
+                                loadData();
+                            }).catch();
+                        }
                     }
                 }
             )
         }
         const editData = async () => {
-            editApi(form).then((res: any) => {
-                    ElMessage.success(t('i18n.success'))
-                    visible.save = false;
-                    loadData();
-                }
-            ).catch();
+            if (editApi) {
+                editApi(form).then((res: any) => {
+                        ElMessage.success(t('i18n.success'))
+                        // @ts-ignore
+                        visible.save = false;
+                        loadData();
+                    }
+                ).catch();
+            }
         }
         const deleteOne = async () => {
-            deleteApi(form).then((res: any) => {
-                    ElMessage.success(t('i18n.success'))
-                    visible.delete = false;
-                    loadData();
-                }
-            ).catch();
+            if (deleteApi) {
+                deleteApi(form).then((res: any) => {
+                        ElMessage.success(t('i18n.success'))
+                        // @ts-ignore
+                        visible.delete = false;
+                        loadData();
+                    }
+                ).catch();
+            }
         }
         const clickDeleteData = (operate_id: number) => {
+            // @ts-ignore
             form.id = operate_id
             confirmBox(t, deleteOne, {
                 message: t('i18n.delete')

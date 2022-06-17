@@ -59,6 +59,16 @@ const routes = [
                 path: '/host',
                 component: () => import ( /* webpackChunkName: "dashboard" */ '../views/host/index.vue'),
                 meta: {title: 'host'}
+            },
+            {
+                path: '/log',
+                component: () => import ( /* webpackChunkName: "dashboard" */ '../views/log/index.vue'),
+                meta: {title: 'log'}
+            },
+            {
+                path: '/task',
+                component: () => import ( /* webpackChunkName: "dashboard" */ '../views/task/index.vue'),
+                meta: {title: 'task'}
             }
         ]
     },
@@ -66,6 +76,11 @@ const routes = [
         path: '/login',
         component: () => import ( /* webpackChunkName: "dashboard" */ '../views/login/index.vue'),
         meta: {title: 'login'}
+    },
+    {
+        path: '/term',
+        component: () => import ( /* webpackChunkName: "dashboard" */ '../views/term/index.vue'),
+        meta: {title: 'term'}
     },
     {
         path: '/:pathMatch(.*)*',

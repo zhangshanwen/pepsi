@@ -26,6 +26,14 @@
                          property="host"
                          align="center">
         </el-table-column>
+        <el-table-column :label="t('field.username')"
+                         property="username"
+                         align="center">
+        </el-table-column>
+        <el-table-column :label="t('field.password')"
+                         property="password"
+                         align="center">
+        </el-table-column>
         <el-table-column :label="t('field.connect_type')"
                          property="connect_type"
                          :formatter="formatterConnectType"
@@ -38,14 +46,15 @@
         <el-table-column
             prop="status"
             :label="t('field.status')"
+            align="center"
         >
           <template #default="scope">
-            <el-tag
-                :type="scope.row.status === 1 ? 'success' : 'danger'"
-                disable-transitions
-            >{{ scope.row.status === 1 ? t('i18n.success') : t('i18n.failed') }}
-            </el-tag
-            >
+            <el-icon v-if="scope.row.status === 1" color="#67C23A" :size="20">
+              <CircleCheckFilled class="{color:'#67C23A'}"/>
+            </el-icon>
+            <el-icon v-else color="red" :size="20">
+              <CircleCloseFilled/>
+            </el-icon>
           </template>
         </el-table-column>
         <el-table-column :label="t('field.updated_time')"
@@ -61,9 +70,10 @@
 
 
         <el-table-column :label="t('i18n.operate')"
-                         align="center" v-if="permission.edit || permission.delete">
+                         align="center" v-if="permission.edit || permission.delete || permission.connect">
           <template #default="scope">
-            <el-button type="text" v-if="permission.connect" @click=clickConnect(scope.row)>
+            <el-button type="text" v-if="permission.connect && scope.row.connect_type ===2"
+                       @click=clickConnect(scope.row)>
               {{ t('i18n.connect') }}
             </el-button>
             <el-button type="text" v-if="permission.edit" @click=clickEditData(scope.row)>
@@ -75,24 +85,8 @@
           </template>
         </el-table-column>
       </el-table>
-      <el-row>
-        <el-col :span="24">
-          <div class="pagination">
-            <el-pagination
-                v-if='pagination.total > 0'
-                :page-sizes="pagination.page_size_array"
-                :page-size="pagination.page_size"
-                :layout="pagination.layout"
-                :total="pagination.total"
-                :current-page='pagination.page_index'
-                @current-change='handleCurrentChange'
-                @size-change='handleSizeChange'>
-            </el-pagination>
-          </div>
-        </el-col>
-      </el-row>
+      <pagination v-bind:pagination="pagination" :load-data="loadData"/>
     </div>
-    <div id="terminal"></div>
     <el-dialog
         :title="visible.is_edit? t('i18n.edit'):t('i18n.new')"
         v-model="visible.save"
@@ -111,9 +105,16 @@
         <el-form-item :label="t('field.host')" prop="host">
           <el-input v-model="form.host"></el-input>
         </el-form-item>
+        <el-form-item :label="t('field.username')" v-if="visible.ssh" prop="username">
+          <el-input v-model="form.username"></el-input>
+        </el-form-item>
+        <el-form-item :label="t('field.password')" v-if="visible.ssh" prop="password">
+          <el-input v-model="form.password"></el-input>
+        </el-form-item>
 
         <el-form-item :label="t('field.connect_type')" prop="connect_type">
-          <el-select v-model="form.connect_type" :placeholder="t('i18n.pls_select_connect_type')">
+          <el-select v-model="form.connect_type" :placeholder="t('i18n.pls_select_connect_type')"
+                     @change="changeConnectType">
             <el-option
                 v-for="item in connect_type_options"
                 :key="item.value"
@@ -148,30 +149,31 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, computed, ref, reactive, nextTick, onMounted} from "vue"
-import {ElMessageBox} from 'element-plus';
+import {defineComponent, computed, ref, reactive, nextTick, onMounted, onUnmounted} from "vue"
 
 
-import {getHosts, createHost, editHost, deleteHost} from '../../api/host';
+import {getHosts, createHost, editHost, deleteHost, createRoom} from '../../api/host';
 import tableApi from "../../components/api/table"
-import {confirmBox, confirmTipBox} from "../../components/api/message_box"
-import {elMessageSuccess} from "../../components/api/message"
 import {has_permission} from "../../utils/permission";
-import {negate, omit, values} from "lodash";
+import {useRouter} from "vue-router";
+import Pagination from "../../components/Pagination.vue"
 
 export default defineComponent({
   name: 'Host',
+  components: {Pagination},
   setup() {
     const visible = reactive({
       save: false,
       delete: false,
       is_edit: false,
-      item: false,
+      ssh: false
     })
     const form = reactive({
       id: 0,
       name: '',
       host: '',
+      username: '',
+      password: '',
       connect_type: 0,
       port: 0,
       status: 0,
@@ -182,7 +184,7 @@ export default defineComponent({
       is_new: computed(() => form.name === '' || form.host === ''),
       is_edit: computed(() => form.name === ''),
     })
-    const table_api = tableApi(getHosts, createHost, editHost, deleteHost, visible, form)
+    const table_api = tableApi(getHosts, createHost, editHost, deleteHost, visible, form, null)
 
 
     const rules = {
@@ -195,11 +197,10 @@ export default defineComponent({
       {value: 2, label: 'shell'},
     ]
     const permission = {
-      add: has_permission("29_1_1631589517500"),
-      edit: has_permission("29_2_1631589543207"),
-      delete: has_permission("29_3_1631589558934"),
-      connect: true,
-
+      add: has_permission("57_1_1654153831042"),
+      edit: has_permission("57_2_1655444757148"),
+      delete: has_permission("57_3_1655444776217"),
+      connect: has_permission('57_4_1655444801659'),
     }
 
     const clickNewData = () => {
@@ -207,19 +208,21 @@ export default defineComponent({
       form.host = ''
       form.comment = ''
       form.connect_type = 0
-      form.port = 0
+      form.port = 80
       form.status = 0
 
       visible.is_edit = false;
       visible.save = true;
     }
     const clickEditData = (row: {
-      id: number, name: string, host: string, comment: string,
+      id: number, name: string, host: string, username: string, password: string, comment: string,
       connect_type: number, port: number, status: number
     }) => {
       form.id = row.id
       form.name = row.name
       form.host = row.host
+      form.username = row.username
+      form.password = row.password
       form.comment = row.comment
       form.connect_type = row.connect_type
       form.port = row.port
@@ -228,8 +231,22 @@ export default defineComponent({
       visible.is_edit = true;
       visible.save = true;
     }
-    const clickConnect = (row: {}) => {
-      visible.item = true
+    const router = useRouter();
+    const clickConnect = (row: { id: number }) => {
+      createRoom({
+        id: row.id
+      }).then((res) => {
+        const {href} = router.resolve({
+          path: '/term',
+          query: {
+            id: res.data.id
+          }
+        });
+        window.open(href, "_blank");
+      }).catch((err) => {
+
+      })
+
     }
     const formatterConnectType = (row: any, column: any, cellValue: number, index: any) => {
       const i = connect_type_options.filter(x => x.value === cellValue)
@@ -238,9 +255,24 @@ export default defineComponent({
       }
       return cellValue
     }
-    onMounted(() => {
-      // var shell = os.platform() === 'win32' ? 'powershell.exe' : 'bash';
-    })
+    const changeConnectType = ((val: number) => {
+          switch (val) {
+            case 0:
+              form.port = 80
+              visible.ssh = false
+              break
+            case 1:
+              form.port = 443
+              visible.ssh = false
+              break
+            case 2:
+              form.port = 22
+              visible.ssh = true
+
+              break
+          }
+        }
+    )
     return {
       ...table_api,
 
@@ -253,6 +285,7 @@ export default defineComponent({
       visible,
       disable,
 
+      changeConnectType,
       clickNewData,
       clickConnect,
       clickEditData,

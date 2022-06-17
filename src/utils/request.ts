@@ -52,7 +52,7 @@ request.interceptors.response.use(
             localStorage.removeItem('ms_username');
             removeToken();
             i18n.global.t('i18n.authentication_failure_pls_log_back_in')
-            await router.push('/')
+            await router.push('/login')
             return Promise.reject(error)
         } else if (error.response.status === 403) {
             await router.push('/403')

@@ -152,7 +152,7 @@ export default {
       delete: false,
       log: false,
     })
-    const table_api = Table(getFiles, uploadFile, updateFile, deleteFile, visible, form)
+    const table_api = Table(getFiles, uploadFile, updateFile, deleteFile, visible, form, null)
 
 
     const rules = {
