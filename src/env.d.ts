@@ -2,5 +2,5 @@ interface ImportMetaEnv {
     VITE_APP_BASE_URL: string,
     VITE_APP_USERNAME: string,
     VITE_APP_PASSWORD: string,
-    __Platform__: string
+    VITE_APP_SOCKET_HOST: string,
 }

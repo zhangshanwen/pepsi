@@ -69,6 +69,16 @@ const routes = [
                 path: '/task',
                 component: () => import ( /* webpackChunkName: "dashboard" */ '../views/task/index.vue'),
                 meta: {title: 'task'}
+
+            },
+            {
+                path: '/live',
+                component: () => import ( /* webpackChunkName: "dashboard" */ '../views/live/index.vue'),
+                meta: {title: 'live'}
+            }, {
+                path: '/watch',
+                component: () => import ( /* webpackChunkName: "dashboard" */ '../views/watch/index.vue'),
+                meta: {title: 'watch'}
             }
         ]
     },

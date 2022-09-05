@@ -25,7 +25,7 @@ export default defineComponent({
       if (tid) {
         term.open(tid);
       }
-      const socketURL = `ws://127.0.0.1:8770/backend/v1/host/socket/${getToken()}/${route.query.id}`;
+      const socketURL = `ws://${import.meta.env.VITE_APP_SOCKET_HOST}/backend/v1/host/socket/${getToken()}/${route.query.id}`;
       ws = new WebSocket(socketURL);
       const attachAddon = new AttachAddon(ws);
       term.loadAddon(attachAddon)

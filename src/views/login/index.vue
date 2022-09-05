@@ -10,11 +10,13 @@
       <el-form @submit.native.prevent :model="param" :rules="rules" ref="login_ref" label-width="0px"
                class="ms-content">
         <el-form-item prop="username">
-          <el-input v-model="param.username" :placeholder="t('i18n.pls_input_username_mobile')">
+
+          <el-input v-model="param.username" autocomplete="on" :placeholder="t('i18n.pls_input_username_mobile')">
           </el-input>
         </el-form-item>
         <el-form-item prop="password">
           <el-input
+              autocomplete="on"
               type="password"
               :placeholder="t('i18n.pls_input_password')"
               v-model="param.password">
