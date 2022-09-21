@@ -14,6 +14,11 @@
         </el-form-item>
 
         <el-button round type="primary" @click="loadData()">{{ t('i18n.search') }}</el-button>
+        <el-button round type="primary" @click="emptyData()">{{ t('i18n.cleanup') }}</el-button>
+        <el-button round type="primary" v-show="multipleSelection.length>0" @click="deleteData()">{{
+            t('i18n.delete')
+          }}
+        </el-button>
       </el-form>
       <el-divider></el-divider>
       <el-table
@@ -22,8 +27,10 @@
           border
           stripe
           highlight-current-row
+          @selection-change="handleSelectionChange"
           header-cell-class-name="table-header-class"
           style="width:100%">
+        <el-table-column type="selection" width="55"/>
         <el-table-column :label="t('field.index')"
                          align="center">
           <template #default="scope">
@@ -40,6 +47,15 @@
             <el-tag effect="dark" :type="roleType(scope.row.role_name)">{{
                 scope.row.role_name === '' ?
                     t('i18n.nothing') : scope.row.role_name
+              }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column :label="t('field.module')"
+                         align="center">
+          <template #default="scope">
+            <el-tag effect="dark" type="success">{{
+                scope.row.module
               }}
             </el-tag>
           </template>
@@ -74,7 +90,8 @@ import {reactive, ref, computed, onMounted, onUnmounted, nextTick} from "vue";
 
 import tableApi from "../../components/api/table";
 import Pagination from "../../components/Pagination.vue"
-import {getLogs} from "../../api/log";
+import {getLogs, emptyLogs, deleteLogs} from "../../api/log";
+import table from "../../components/api/table";
 
 export default {
   name: "Log",
@@ -83,6 +100,10 @@ export default {
     const search = reactive({
       types: []
     })
+    interface Row {
+      id: number
+    }
+    const multipleSelection = ref<Row[]>([])
     const table_api = tableApi(getLogs, null, null, null, null, null, search)
     /*  method  */
     const type_options = [
@@ -133,6 +154,17 @@ export default {
           return '';
       }
     }
+    const emptyData = () => {
+      emptyLogs().then(() => {
+        table_api.loadData()
+      })
+    }
+    const deleteData = () => {
+      deleteLogs(multipleSelection.value.map(x => x.id)).then(()=>{
+        table_api.loadData()
+      })
+    }
+
     const formatterLogType = (type: number) => {
       switch (type) {
         case 0:
@@ -147,11 +179,18 @@ export default {
           return '';
       }
     }
+    const handleSelectionChange = async (val: []) => {
+      multipleSelection.value = val
+    }
     return {
       ...table_api,
 
       search,
+      multipleSelection,
       type_options,
+      emptyData,
+      deleteData,
+      handleSelectionChange,
 
       roleType,
       logType,

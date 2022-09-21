@@ -12,3 +12,14 @@ export function getLogs(form: { page_index: number; page_size: number; sort: boo
     })
 }
 
+export function emptyLogs() {
+    return request.delete(`/backend/v1/log/empty`, {})
+}
+
+export function deleteLogs(data: any[]) {
+    return request.delete(`/backend/v1/log`, {
+        params: {
+            ids: data.join(",")
+        }
+    })
+}

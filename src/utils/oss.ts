@@ -1,4 +1,4 @@
-import * as qiniu from 'qiniu-js'
+import * as qiniu from 'qiniu-js';
 
 
 export function uploadFile(token: string, key: string, body: File) {
@@ -13,3 +13,4 @@ export function uploadFile(token: string, key: string, body: File) {
     };
     return qiniu.upload(body, key, token, putExtra, config)
 }
+

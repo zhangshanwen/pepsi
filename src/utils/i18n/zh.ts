@@ -52,6 +52,7 @@ const zh = {
         effect_time: '生效时间',
         expiry_time: '失效时间',
         next_exec_time: '下次执行时间',
+        module:'模块'
     },
     title: {
         '403': '403',
@@ -71,6 +72,7 @@ const zh = {
     i18n: {
         login: '登录',
         empty: '空',
+        cleanup: '清空',
         nothing: '无',
         not_found: "页面不存在",
         no_permission: "没有权限",
