@@ -49,7 +49,6 @@ export default {
   name: 'Login',
   setup() {
     const store = useStore();
-
     const param = reactive({
       username: import.meta.env.VITE_APP_USERNAME,
       password: import.meta.env.VITE_APP_PASSWORD
@@ -105,6 +104,7 @@ export default {
         }
       })
     }
+
     const setPath = (children: any[], items: any[]) => {
       children.forEach((child) => {
         keys_permission = keys_permission.concat(child.key);
@@ -124,7 +124,7 @@ export default {
       });
     };
     onMounted(() => {
-      window.addEventListener("keyup", (e) => {
+      window.addEventListener("keydown", (e) => {
         if (e.key === "Enter") {
           submitForm()
         }
@@ -171,6 +171,7 @@ export default {
     color: #fff
     border:
       bottom: 1px solid #ddd
+
     .title
       height: 50px
       width: 150px
@@ -200,7 +201,6 @@ export default {
       span
         color: white
         font-size: 20px
-
 
 
   .login-form

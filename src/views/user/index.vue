@@ -167,7 +167,7 @@ export default defineComponent({
       is_edit: computed(() => form.username === ''),
       is_balance_adjust: computed(() => (form.balance / 100 + form.amount) < 0),
     })
-    const table_api = tableApi(getUsers, createUser, editUser, deleteUser, visible, form)
+    const table_api = tableApi(getUsers, createUser, editUser, deleteUser, visible, form, null)
 
 
     const rules = {

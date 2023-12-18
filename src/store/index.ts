@@ -1,4 +1,6 @@
 import {createStore} from 'vuex';
+import {strict} from "assert";
+import {map} from "lodash";
 
 
 const tag_data = {
@@ -8,9 +10,44 @@ const tag_data = {
     title: ''
 }
 
+/*
+* */
+
+export interface userInfo {
+    uin: string
+    nickName: string
+    sex: string
+    headUri: string
+    isGroup: boolean
+    lastCount: number
+
+}
+
+export interface message {
+    msg: string
+    sender_id: string
+    receiver_id: string
+    is_group: boolean
+    created_time: number
+}
+
+export interface instructBody {
+    name: string
+    data: any
+}
+
+
 const tag_state = {
     tagsList: [tag_data],
-    collapse: false
+    collapse: false,
+    xtermIsEnv: false,
+    wechat: {
+        userInfo: <userInfo>{},
+        friends: [],
+        chatUser: <userInfo>{},
+        instruct: [],
+        messages: [],
+    }
 }
 
 export default createStore({

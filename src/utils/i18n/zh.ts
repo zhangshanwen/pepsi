@@ -52,7 +52,10 @@ const zh = {
         effect_time: '生效时间',
         expiry_time: '失效时间',
         next_exec_time: '下次执行时间',
-        module:'模块'
+        module: '模块',
+        reply: '回复规则',
+        description: '描述',
+        function_name: '方法名',
     },
     title: {
         '403': '403',
@@ -67,7 +70,9 @@ const zh = {
         file: '文件管理',
         host: '主机管理',
         log: '日志管理',
-        task: '任务管理'
+        task: '任务管理',
+        wechat: '微信管理',
+        rule: '规则管理'
     },
     i18n: {
         login: '登录',
@@ -102,6 +107,8 @@ const zh = {
         no_data: '暂无数据',
         save: '保存',
         backend_system: '后台服务',
+        wechat_room: '微信聊天室',
+        pls_scan_qrcode: '请扫描二维码',
         result: '结果',
         tag: '标签',
         tags: '标签',
@@ -137,6 +144,9 @@ const zh = {
         authentication_failure_pls_log_back_in: '认证失败,请重新登录',
         request_timeout: '请求超时',
         success: '成功',
+        loginSuccess: '登陆成功',
+        scanned: '已扫描',
+        timeout: '超时',
         failed: '失败',
         permission: '权限',
         edit_permission: '修改权限',

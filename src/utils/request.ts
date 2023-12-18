@@ -10,12 +10,11 @@ import {getToken, removeToken} from './auth';
 
 
 const baseURL = import.meta.env.MODE === 'development'
-    ? '/apps'
-    : import.meta.env.VITE_APP_BASE_URL
+    ? '/apps' : ''
 
 const request = axios.create({
     baseURL: baseURL,
-    timeout: 1000 * 5
+    timeout: 1000 * 30
 });
 
 
@@ -26,7 +25,7 @@ request.interceptors.request.use(
         let token = getToken();
         if (token) {
             config.headers = {
-                Authorization: token
+                authorization: token
             };
         }
         return config;

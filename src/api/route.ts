@@ -19,6 +19,8 @@ let key2Path: key2PathInterface = {
     '50_2_1654153710016': '/host',
     '5_3_1655046177871': '/log',
     '50_3_1655103866059': '/task',
+    '76_1_1690250619835': '/wechat',
+    '76_2_1690426715889': '/rule',
 }
 
 export default key2Path

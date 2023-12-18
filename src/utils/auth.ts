@@ -2,7 +2,7 @@ import Cookies from 'js-cookie';
 import {jsondecode, jsonencode} from "./base64";
 import user_avatar from "../assets/img/img.jpg"
 
-const TokenKey = 'Authorization';
+const TokenKey = 'authorization';
 const UserInfoKey = "pepsi_user_info"
 let minute = 60 * 1000;
 

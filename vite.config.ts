@@ -35,7 +35,7 @@ export default defineConfig(({mode}) => {
                 // 设置代理，根据我们项目实际情况配置
                 proxy: {
                     '/apps': {
-                        target: 'http://0.0.0.0:8770',
+                        target: 'http://0.0.0.0:8771',
                         changeOrigin: true,
                         secure: false,
                         rewrite: (path) => path.replace('/apps/', '/')

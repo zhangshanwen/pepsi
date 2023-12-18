@@ -79,6 +79,20 @@ const routes = [
                 path: '/watch',
                 component: () => import ( /* webpackChunkName: "dashboard" */ '../views/watch/index.vue'),
                 meta: {title: 'watch'}
+            }, {
+                path: '/three',
+                component: () => import ( /* webpackChunkName: "dashboard" */ '../views/three/index.vue'),
+                meta: {title: 'three'}
+            },
+            {
+                path: '/wechat',
+                component: () => import ( /* webpackChunkName: "dashboard" */ '../views/wechat/index.vue'),
+                meta: {title: 'wechat'}
+            },
+            {
+                path: '/rule',
+                component: () => import ( /* webpackChunkName: "dashboard" */ '../views/wechat/rule/index.vue'),
+                meta: {title: 'rule'}
             }
         ]
     },
