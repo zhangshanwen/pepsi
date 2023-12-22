@@ -73,7 +73,7 @@ const routes = [
             },
             {
                 path: '/live',
-                component: () => import ( /* webpackChunkName: "dashboard" */ '../views/live/index.vue'),
+                component: () => import ( /* webpackChunkName: "dashboard" */ '../views/meeting/index.vue'),
                 meta: {title: 'live'}
             }, {
                 path: '/watch',
@@ -93,6 +93,11 @@ const routes = [
                 path: '/rule',
                 component: () => import ( /* webpackChunkName: "dashboard" */ '../views/wechat/rule/index.vue'),
                 meta: {title: 'rule'}
+            },
+            {
+                path: '/meeting',
+                component: () => import ( /* webpackChunkName: "dashboard" */ '../views/meeting/index.vue'),
+                meta: {title: 'meeting'}
             }
         ]
     },

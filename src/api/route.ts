@@ -21,6 +21,7 @@ let key2Path: key2PathInterface = {
     '50_3_1655103866059': '/task',
     '76_1_1690250619835': '/wechat',
     '76_2_1690426715889': '/rule',
+    '79_1_1702866055492': '/meeting',
 }
 
 export default key2Path

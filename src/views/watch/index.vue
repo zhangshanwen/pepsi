@@ -22,7 +22,7 @@ export default defineComponent({
         player = flvjs.createPlayer({
           type: 'flv',
           isLive: true,
-          url: 'http://127.0.0.1:8770/backend/v1/live/10000.flv',
+          url: 'http://127.0.0.1:8771/backend/v1/live/1111.flv',
         }, {
           // autoCleanupMinBackwardDuration: 5, // 清除缓存 对 SourceBuffer 进行自动清理
         })

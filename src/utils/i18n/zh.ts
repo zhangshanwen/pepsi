@@ -56,6 +56,9 @@ const zh = {
         reply: '回复规则',
         description: '描述',
         function_name: '方法名',
+        owner: '拥有者',
+        start_time: '开始时间',
+        end_time: '结束时间',
     },
     title: {
         '403': '403',
@@ -172,7 +175,9 @@ const zh = {
         running: '运行中',
         manage: '管理',
         immediate_exec: '立即执行',
-        system: '系统'
+        system: '系统',
+        enter: '进入',
+        join: '加入'
 
     },
     code: {
