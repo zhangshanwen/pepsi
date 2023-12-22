@@ -1,6 +1,6 @@
 import request from '../utils/request'
 
-export function pushMeeting(mid: string, data: any) {
+export function pushMeeting(mid: number, data: any) {
     return request.post(`/backend/v1/meeting/push/${mid}`, data)
 }
 
@@ -12,7 +12,7 @@ export function getMeetings() {
     return request.get(`/backend/v1/meeting`, {})
 }
 
-export function joinMeeting(mid: string) {
+export function joinMeeting(mid: number) {
     return request.get(`/backend/v1/meeting/join/${mid}`)
 }
 
