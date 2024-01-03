@@ -52,7 +52,7 @@ const uploadOffset = 1000
 const startRecord = (stream: MediaStream, msgType: string) => {
   // recorder = new MediaRecorder(stream, {mimeType: mineType})
   recorder = new MediaRecorder(stream, )
-  recorder.ondataavailable = (e) => {
+  recorder.ondataavailable = async (e) => {
     if (ws.readyState) {
       ws.send(constructMsg({
         data: ab2str(await e.data.arrayBuffer()),
