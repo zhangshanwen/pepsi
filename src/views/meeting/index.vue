@@ -1,6 +1,7 @@
 <template>
   <div>
     <div class="contain">
+
       <div v-if="visible.table">
         <el-button round type="primary" @click="loadData()">{{ t('i18n.search') }}</el-button>
         <el-button round type="primary" @click="clickNewData()">{{ t('i18n.new') }}</el-button>
@@ -38,9 +39,9 @@
               <el-icon v-if="scope.row.status===0" color="grey" :size="20">
                 <CircleCloseFilled/>
               </el-icon>
-<!--              <el-icon v-else-if="scope.row.status===1" color="green" :size="20">-->
-<!--                <Refresh/>-->
-<!--              </el-icon>-->
+              <!--              <el-icon v-else-if="scope.row.status===1" color="green" :size="20">-->
+              <!--                <Refresh/>-->
+              <!--              </el-icon>-->
               <el-icon v-else color="red" :size="20">
                 <RemoveFilled/>
               </el-icon>
@@ -77,10 +78,9 @@
         <pagination v-bind:pagination="pagination" :load-data="loadData"/>
       </div>
 
-    <div v-else>
-      <owner v-if="visible.isOwner" :mid="form.id"/>
-      <viewer v-else :mid="form.id"/>
-    </div>
+      <div v-else>
+        <meeting :room-id="form.id"/>
+      </div>
       <el-dialog
           :title="t('i18n.new')"
           v-model="visible.save"
@@ -119,12 +119,11 @@ import tableApi from "../../components/api/table"
 import {useRouter} from "vue-router";
 import Pagination from "../../components/Pagination.vue"
 import {CircleCloseFilled, Refresh, RemoveFilled} from "@element-plus/icons-vue";
-import Viewer from "./components/viewer.vue";
-import Owner from "./components/owner.vue";
+import Meeting from "./components/meeting.vue";
 
 export default defineComponent({
   name: 'Host',
-  components: {CircleCloseFilled, RemoveFilled, Refresh, Pagination, Viewer, Owner},
+  components: {Meeting, CircleCloseFilled, RemoveFilled, Refresh, Pagination},
   setup() {
     const visible = reactive({
       save: false,

@@ -75,7 +75,8 @@ const zh = {
         log: '日志管理',
         task: '任务管理',
         wechat: '微信管理',
-        rule: '规则管理'
+        rule: '规则管理',
+        meeting: '会议室'
     },
     i18n: {
         login: '登录',
